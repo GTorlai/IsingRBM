@@ -1,0 +1,6 @@
+*.pyc
+datasets/*
+*.txt
+*.dat
+*.pkl
+networks/*
