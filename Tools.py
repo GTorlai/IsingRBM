@@ -177,7 +177,7 @@ def Format_Dataset_CPP():
         for j in range(configNumber):
             for k in range(size):
                 output.write('%d' % dic[dic['Temperatures'][i]][j][k])
-            
+                output.write(" ") 
             output.write('\n')
 
     output.close()
