@@ -146,12 +146,51 @@ def Pickle_datasets():
 
     output.close()
     
+#------------------------------------------------
 
+def Format_Dataset_CPP():
+    
+    #Read command line argument
+    parser = argparse.ArgumentParser()
+    parser.add_argument('fileName',type=str)
+
+    #Parse argument
+    args = parser.parse_args()
+
+    f = gzip.open(args.fileName)
+    sizePath = 9
+
+    header, dic = cPickle.load(f)
+    outputName = args.fileName[sizePath:-7]
+    outputName += str('.txt')
+    output = open(outputName,'w')
+
+    tempSteps = len(dic['Temperatures'])
+    configNumber = len(dic[dic['Temperatures'][0]])
+    size = len(dic[dic['Temperatures'][0]][0])
+ 
+    print ('\nNumber of temperatures in the datasets: %i' % tempSteps)
+    print ('\nNumber of configuration per temperature: %i' % configNumber)
+    print ('\nNumber of spins: %i' % size) 
+    #print dic[dic['Temperatures'][0]][0][1] 
+    for i in range(tempSteps):
+        for j in range(configNumber):
+            for k in range(size):
+                output.write('%d' % dic[dic['Temperatures'][i]][j][k])
+            
+            output.write('\n')
+
+    output.close()
+
+
+    
+    #print len(dic[dic['Temperatures'][0]][0])
 #------------------------------------------------
 
 if __name__ == "__main__":
     
-    Pickle_datasets()
+    #Pickle_datasets()
+    Format_Dataset_CPP()
     #parser = argparse.ArgumentParser()
     #parser.add_argument('model',type=str)
 
