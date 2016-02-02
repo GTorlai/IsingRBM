@@ -4,3 +4,4 @@ datasets/*
 *.dat
 *.pkl
 networks/*
+.DS_Store
