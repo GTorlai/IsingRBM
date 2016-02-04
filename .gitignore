@@ -1,5 +1,7 @@
 *.pyc
 datasets/*
+samples/*
+measurements/*
 *.txt
 *.dat
 *.pkl

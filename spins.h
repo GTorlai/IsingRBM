@@ -5,7 +5,6 @@
 // Class describing Ising spins on a lattice
 
 #include <vector>
-#include "MersenneTwister.h"
 #include <fstream>
 
 using namespace std;
@@ -23,9 +22,8 @@ class Spins {
         Spins(int N_);
         Spins();
         void resize(int N_);
-        void flip(int index);
+        void assign(vector<int> config); 
         void print();
-        void randomize(MTRand & random);
         void filePrint(ofstream & file); 
 };
 

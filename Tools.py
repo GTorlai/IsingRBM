@@ -39,15 +39,14 @@ def Save_network(fileName,net):
     information = {}
     fullNet = {}
     
-    if netName == 'RBM':
-        information['Hidden Units']  = net.n_h
-        information['Learning Rate'] = net.learning_rate
-        information['Batch Size']    = net.batch_size
-        information['Epochs']        = net.epochs
-        information['CD_order']      = net.CD_order
-        information['Partition Function'] = net.Z
-        information['AIS chains']       = net.AIS_chains
-        information['AIS sweeps']       = net.AIS_sweeps
+    information['Hidden Units']  = net.n_h
+    information['Learning Rate'] = net.learning_rate
+    information['Batch Size']    = net.batch_size
+    information['Epochs']        = net.epochs
+    information['CD_order']      = net.CD_order
+    information['Partition Function'] = net.Z
+    information['AIS chains']       = net.AIS_chains
+    information['AIS sweeps']       = net.AIS_sweeps
 
     #Collecting everything
     fullNet['Parameters']            = net.params
