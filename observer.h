@@ -19,6 +19,9 @@ class Observer {
         int D;
         //Number of configurations
         int dataSize;
+
+        double e;
+        long int m;
     
         //Observables
         double Energy; 
@@ -36,10 +39,10 @@ class Observer {
         Observer(Spins & sigma, Hypercube & cube, int dataSize_);
     
         //Functions
-        double GetEnergy(Spins & sigma);
-        int GetMagnetization(Spins & sigma);
+        void GetEnergy(Spins & sigma);
+        void GetMagnetization(Spins & sigma);
         void GetCorrelationLength(const int & L, vector<vector<int> > &coordinate);
-        void record(double energy, int magn,Spins & sigma);
+        void record(Spins & sigma);
         void reset();
         void output(double T,ofstream & file);
 

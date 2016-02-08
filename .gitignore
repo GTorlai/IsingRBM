@@ -7,3 +7,5 @@ measurements/*
 *.pkl
 networks/*
 .DS_Store
+measure
+grid_search.sh

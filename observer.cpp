@@ -31,7 +31,7 @@ Observer::Observer(Spins & sigma, Hypercube & cube, int dataSize_) {
     }//i
      
     vector<double> temp;
-    temp.assign(N,0.0);
+    temp.assign(N,0);
 	
     for(int i=0; i<N; i++) {
 	SpinSpinCorr.push_back(temp);
@@ -41,31 +41,28 @@ Observer::Observer(Spins & sigma, Hypercube & cube, int dataSize_) {
 }
 
 //Computer the energy in the system
-double Observer::GetEnergy(Spins & sigma) {
+void Observer::GetEnergy(Spins & sigma) {
 	
-    double En=0.0;
+    e = 0.0;
 
     for(int i=0; i<sigma.N; i++) {
 	for(int j=0; j<NearestNeighbors[i].size(); j++) {
-	    En += - sigma.spin[i]*sigma.spin[NearestNeighbors[i][j]];
+	    e += - (2*sigma.spin[i]-1)*(2*sigma.spin[NearestNeighbors[i][j]]-1);
 	}//j
     }//i
 
-    En /= 2.0;
-    return En;
+    e /= 2.0;
 
 }//GetEnergy
 
 //Computer the magnetization in the system
-int Observer::GetMagnetization(Spins & sigma) {
+void Observer::GetMagnetization(Spins & sigma) {
     
-    int Ma=0;
+    m = 0;
     for(int i=0; i<sigma.N; i++) {
-        Ma += sigma.spin[i];
+        m += 2*sigma.spin[i]-1;
     }//i
 
-    return Ma;
-    
 }//GetMagnetization
 
 //Reset
@@ -86,17 +83,17 @@ void Observer::reset() {
 }//reset
 
 //Update the measurements
-void Observer::record(double energy, int  magn, Spins & sigma) {
+void Observer::record(Spins & sigma) {
 
-    Energy += energy;
-    Energy2 += energy * energy;
-    Magn += 1.0*abs(magn);
-    Magn2 += 1.0*magn*magn;
-    Magn4 += 1.0*magn*magn*magn*magn;
+    Energy += e;
+    Energy2 += e*e;
+    Magn += 1.0*abs(m);
+    Magn2 += 1.0*m*m;
+    Magn4 += 1.0*m*m*m*m;
 
     for(int i=0; i<N; i++) {
     	for(int j=0; j<N; j++) {
-    	    SpinSpinCorr[i][j] += sigma.spin[i]*sigma.spin[j];
+    	    SpinSpinCorr[i][j] += (2*sigma.spin[i]-1)*(2*sigma.spin[j]-1);
     	}//j
     }//i
 
