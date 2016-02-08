@@ -22,7 +22,7 @@ class Spins {
         Spins(int N_);
         Spins();
         void resize(int N_);
-        void assign(vector<int> config); 
+        void setSpins(vector<int> config); 
         void print();
         void filePrint(ofstream & file); 
 };

@@ -26,10 +26,11 @@ void Spins::resize(int N_){
 
 }
 
-void Spins::assign(vector<int> config) {
+void Spins::setSpins(vector<int> config) {
     
+    spin.clear(); 
     for (int i=0; i<N; i++) {
-        spin[i] = config[i];
+        spin.push_back(config[i]);
     }
 }
 
