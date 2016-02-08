@@ -87,7 +87,7 @@ def Print_network(netName):
 
 #-------------------------------------------------
 
-def Pickle_datasets():
+def Pickle_datasets(name):
     
     """ Create a compact pickled version of the dataset.
         Arguments: name    -> Name for the output file
@@ -99,16 +99,9 @@ def Pickle_datasets():
         
     """
     
-    # Read command line argument
-    parser = argparse.ArgumentParser()
-    parser.add_argument('name',type=str)
-            
-    # Parse arguments
-    args = parser.parse_args()
-    
     path = 'datasets/*.txt'
 
-    outputName = args.name + str('.pkl.gz')        
+    outputName = name + str('.pkl.gz')        
     
     files = glob.glob(path)
     dic = {}
@@ -147,20 +140,13 @@ def Pickle_datasets():
     
 #------------------------------------------------
 
-def Format_Dataset_CPP():
+def Format_Dataset_CPP(fileName):
     
-    #Read command line argument
-    parser = argparse.ArgumentParser()
-    parser.add_argument('fileName',type=str)
-
-    #Parse argument
-    args = parser.parse_args()
-
-    f = gzip.open(args.fileName)
+    f = gzip.open(fileName)
     sizePath = 9
 
     header, dic = cPickle.load(f)
-    outputName = args.fileName[sizePath:-7]
+    outputName = fileName[sizePath:-7]
     outputName += str('.txt')
     output = open(outputName,'w')
 
@@ -188,11 +174,20 @@ def Format_Dataset_CPP():
 
 if __name__ == "__main__":
     
-    #Pickle_datasets()
-    Format_Dataset_CPP()
-    #parser = argparse.ArgumentParser()
-    #parser.add_argument('model',type=str)
+    parser = argparse.ArgumentParser()
 
-    #args = parser.parse_args()
-     
-    #Print_network(args.model)
+    parser.add_argument('command',type=str)
+    parser.add_argument('--file',type=str)
+    parser.add_argument('--model',type=str)
+
+    args = parser.parse_args()
+
+    if args.command == 'pickle':
+        Pickle_datasets(args.file)
+
+    elif args.command == 'format':
+        Format_Dataset_CPP(args.file)
+
+    elif args.command == 'print':
+        Print_network(args.model)
+    

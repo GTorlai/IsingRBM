@@ -262,19 +262,21 @@ class RBM(object):
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
-    def sample(self,network):
+    def sample(self,network,Temp):
         
         """ Sample visible units from the rbm """
         
-        eq_steps = 100
-        n_measure = 500000
+        eq_steps = 5000
+        n_measure = 100000
         record_frequency = 2
         
         modelFileName = 'RBM_CD'
         modelFileName += str(network['Informations']['CD_order'])
         modelFileName += '_hid'
         modelFileName += str(self.n_h)
-        modelFileName += '_Ising2d_L8.txt'
+        modelFileName += '_Ising2d_L8_T'
+        modelFileName += str(Temp)
+        modelFileName += str('_samples.txt')
  
         output = open(modelFileName,'w')
 

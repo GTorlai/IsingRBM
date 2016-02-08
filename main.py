@@ -59,7 +59,7 @@ def main():
     elif args.command == 'sample':
 
         pathToNetwork = args.net
-
+        
         Network = cPickle.load(open(pathToNetwork))
         
         n_h = Network['Informations']['Hidden Units']
@@ -68,7 +68,7 @@ def main():
                 Network['Parameters'][0], Network['Parameters'][1],
                 Network['Parameters'][2])
         
-        rbm.sample(Network)
+        rbm.sample(Network,args.T)
         
 
 if __name__ == "__main__":
