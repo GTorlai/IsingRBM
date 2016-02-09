@@ -8,4 +8,4 @@ measurements/*
 networks/*
 .DS_Store
 measure
-grid_search.sh
+runs
