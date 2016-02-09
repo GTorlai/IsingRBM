@@ -40,7 +40,7 @@ def main():
 
 	fig = figure(1,figsize=(8,6))
 	# Loop through files and plot data
-	Lab = ['MC full','MC dataset','RBM, 32 hidden','RBM 64 hidden','RBM 128 hidden']
+	Lab = ['MC','RBM, 32 hidden','RBM 64 hidden','RBM 128 hidden']
 
 
         for i,fileName in enumerate(fileNames):
@@ -63,7 +63,7 @@ def main():
         #yscale('log')
 
 	# Set Legend
-	lgd = legend(loc='center right')
+	lgd = legend(loc='upper center')
 	if lgd: lgd.draggable(state=True) 
 
 	show()
