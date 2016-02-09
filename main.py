@@ -41,12 +41,12 @@ def main():
     AIS_s = 1000
 
     SimPar = Tools.SimPar(args.ep,
-                           args.bs,
-                           args.CD,
-                           args.lr,
-                           args.L2,
-                           AIS_c,
-                           AIS_s)
+                          args.bs,
+                          args.CD,
+                          args.lr,
+                          args.L2,
+                          AIS_c,
+                          AIS_s)
 
     if args.command == 'train' :
 

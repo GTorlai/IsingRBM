@@ -228,13 +228,19 @@ class RBM(object):
         )
         
         epoch = 0
-        
+        linear_size = int(np.sqrt(self.n_v))
+
         modelFileName = 'RBM_CD'
         modelFileName += str(self.CD_order)
         modelFileName += '_hid'
         modelFileName += str(self.n_h)
-        modelFileName += '_'
-        modelFileName += 'Ising2d_L8_T'
+        modelFileName += '_bS'
+        modelFileName += str(self.batch_size)
+        modelFileName += '_ep'
+        modelFileName += str(self.epochs)
+        modelFileName += '_Ising2d_L'
+        modelFileName += str(linear_size)
+        modelFileName += '_T'
         modelFileName += str(Temp)
         modelFileNameExt = modelFileName
         modelFileNameExt += str('_model.pkl')
@@ -266,15 +272,23 @@ class RBM(object):
         
         """ Sample visible units from the rbm """
         
-        eq_steps = 5000
-        n_measure = 100000
-        record_frequency = 2
-        
+        eq_steps = 5
+        n_measure = 10
+        record_frequency = 1
+
+        linear_size = int(np.sqrt(self.n_v))
+
         modelFileName = 'RBM_CD'
         modelFileName += str(network['Informations']['CD_order'])
         modelFileName += '_hid'
         modelFileName += str(self.n_h)
-        modelFileName += '_Ising2d_L8_T'
+        modelFileName += '_bS'
+        modelFileName += str(network['Informations']['Batch Size'])
+        modelFileName += '_ep'
+        modelFileName += str(network['Informations']['Epochs'])
+        modelFileName += '_Ising2d_L'
+        modelFileName += str(linear_size)
+        modelFileName += '_T'
         modelFileName += str(Temp)
         modelFileName += str('_samples.txt')
  

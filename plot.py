@@ -40,7 +40,7 @@ def main():
 
 	fig = figure(1,figsize=(8,6))
 	# Loop through files and plot data
-	Lab = ['MC','RBM, 32 hidden','RBM 64 hidden','RBM 128 hidden']
+	Lab = ['MC','RBM, 32 hidden','RBM, 64 hidden','RBM 128 hidden']
 
 
         for i,fileName in enumerate(fileNames):

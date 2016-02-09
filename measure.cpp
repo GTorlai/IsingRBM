@@ -8,12 +8,13 @@ int main(int argc, char *argv[]) {
 
     
     int MCS = 100000;
-    int D;
+    int D = 2;
     int L;
     int T;
-    int n_H;
+    int hid;
     int CD = 15;
     int bS = 100;
+    int ep = 100;
     int n_temp = 21;
         
     vector<double> temperatures;    
@@ -34,13 +35,17 @@ int main(int argc, char *argv[]) {
         } 
 
         if (strcmp(argv[i],"--hid") == 0) {
-           n_H = atoi(argv[i+1]);
+           hid = atoi(argv[i+1]);
         } 
         
         if (strcmp(argv[i],"--bS") == 0) {
            bS = atoi(argv[i+1]);
         } 
         
+        if (strcmp(argv[i],"--ep") == 0) {
+           ep = atoi(argv[i+1]);
+        } 
+
         if (strcmp(argv[i],"--CD") == 0) {
            CD = atoi(argv[i+1]);
         } 
@@ -62,7 +67,11 @@ int main(int argc, char *argv[]) {
     string inputFileName = "samples/RBM_CD";
     inputFileName += to_string(CD);
     inputFileName += "_hid";
-    inputFileName += to_string(n_H);
+    inputFileName += to_string(hid);
+    inputFileName += "_bS";
+    inputFileName += to_string(bS);
+    inputFileName += "_ep";
+    inputFileName += to_string(ep);
     inputFileName += "_Ising";
     inputFileName += to_string(D);
     inputFileName += "d_L";
@@ -74,12 +83,19 @@ int main(int argc, char *argv[]) {
     string outputFileName = "measurements/raw/RBM_CD";
     outputFileName += to_string(CD);
     outputFileName += "_hid";
-    outputFileName += to_string(n_H);
+    outputFileName += to_string(hid);
+    outputFileName += "_bS";
+    outputFileName += to_string(bS);
+    outputFileName += "_ep";
+    outputFileName += to_string(ep);
     outputFileName += "_Ising";
     outputFileName += to_string(D);
     outputFileName += "d_L";
     outputFileName += to_string(L);
     outputFileName += "_T";
+    if (T < 10) {
+        outputFileName += "0";
+    }
     outputFileName += to_string(T);
     outputFileName += "_measure.txt";
     
@@ -111,7 +127,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    
     cout << "Running...";
     
     for (int k = 0; k<MCS; k++) {
