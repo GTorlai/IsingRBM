@@ -87,7 +87,7 @@ def Print_network(netName):
 
 #-------------------------------------------------
 
-def Pickle_datasets(name):
+def Pickle_datasets():
     
     """ Create a compact pickled version of the dataset.
         Arguments: name    -> Name for the output file
@@ -99,20 +99,24 @@ def Pickle_datasets(name):
         
     """
     
-    path = 'datasets/*.txt'
+    path = 'datasets/raw/L8/*.txt'
 
-    outputName = name + str('.pkl.gz')        
+    #outputName = name + str('.pkl.gz')        
     
     files = glob.glob(path)
-    dic = {}
-    sizePath = 9
-    tempList = []
+    #dic = {}
+    #sizePath = 9
+    #tempList = []
+    Tcounter = 0
 
     for fileName in files:
         with open(fileName) as f:
             
-            setTemp = float(fileName[sizePath+7:-4])
-            tempList.append(setTemp)
+            print 'Opening file:'
+            print fileName
+
+            #setTemp = float(fileName[sizePath+7:-4])
+            #tempList.append(setTemp)
             data = []
 
             for images in f:
@@ -122,21 +126,29 @@ def Pickle_datasets(name):
                 
             data = np.array(data,dtype='float32')
 
-        dic[setTemp] = data
+        #dic[setTemp] = data
+        outputName = 'datasets/spins/L8/Ising2d_L8_spins_T'
+        outputName += str(Tcounter)
+        outputName += '.pkl.gz'
 
-    dic['Temperatures'] = tempList
-    headerPath = 'datasets/header.dat' 
-    with open (headerPath, "r") as myfile:
-        header = myfile.read()
+        with gzip.open(outputName,'wb') as output:
+            cPickle.dump(data,output,protocol=cPickle.HIGHEST_PROTOCOL)
+        output.close()
+        Tcounter += 1
+
+    #dic['Temperatures'] = tempList
+    #headerPath = 'datasets/header.dat' 
+    #with open (headerPath, "r") as myfile:
+    #    header = myfile.read()
             
     # Build test set
-    fullSet = (header,dic)
+    #fullSet = (header,dic)
 
     # Pickle and gzip the dataset 
-    with gzip.open(outputName, 'wb') as output:
-        cPickle.dump(fullSet, output, protocol=cPickle.HIGHEST_PROTOCOL)
+    #with gzip.open(outputName, 'wb') as output:
+    #    cPickle.dump(fullSet, output, protocol=cPickle.HIGHEST_PROTOCOL)
 
-    output.close()
+    #output.close()
     
 #------------------------------------------------
 
@@ -183,7 +195,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.command == 'pickle':
-        Pickle_datasets(args.file)
+        Pickle_datasets()
 
     elif args.command == 'format':
         Format_Dataset_CPP(args.file)

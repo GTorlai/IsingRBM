@@ -14,7 +14,7 @@ def main():
     parser.add_argument('dataset',type=str)
     parser.add_argument('--hid',type=int)
     parser.add_argument('--net',type=str)
-    parser.add_argument('--T',type = int)
+    #parser.add_argument('--T',type = int)
     parser.add_argument('--ep',default = 100,type=int)
     parser.add_argument('--bs',default = 100,type=int)
     parser.add_argument('--lr',default = 0.001,type=float)
@@ -24,17 +24,24 @@ def main():
     args = parser.parse_args()
 
     X = T.matrix()
-    
+
     f = gzip.open(args.dataset,'rb')
-    header, dic = cPickle.load(f)
+    #header, dic = cPickle.load(f)
+    spins = cPickle.load(f)
     f.close()
-    print header
+    #print header
+    
+    temperatureIndex = args.dataset[36]
+    if (args.dataset[37] != '.'):
+        temperatureIndex += args.dataset[37]
 
-    temp = dic['Temperatures'][args.T]
+    #temp = dic['Temperatures'][args.T]
 
-    train_X = theano.shared(np.asarray(dic[temp],
+    #train_X = theano.shared(np.asarray(dic[temp],
+    #    dtype = theano.config.floatX), borrow = True)
+    train_X = theano.shared(np.asarray(spins,
         dtype = theano.config.floatX), borrow = True)
-   
+ 
     n_v = len(train_X.get_value()[0])
     
     AIS_c = 10000
@@ -54,7 +61,7 @@ def main():
 
         rbm = RBM.RBM(X,args.dataset,n_v,n_h,SimPar)
         
-        rbm.Train(train_X,X,args.T)
+        rbm.Train(train_X,X,temperatureIndex)
 
     elif args.command == 'sample':
 
@@ -68,7 +75,7 @@ def main():
                 Network['Parameters'][0], Network['Parameters'][1],
                 Network['Parameters'][2])
         
-        rbm.sample(Network,args.T)
+        rbm.sample(Network,temperatureIndex)
         
 
 if __name__ == "__main__":
