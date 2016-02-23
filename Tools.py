@@ -99,7 +99,7 @@ def Pickle_datasets():
         
     """
     
-    path = 'datasets/raw/L8/*.txt'
+    path = 'datasets/raw/L16/*.txt'
 
     #outputName = name + str('.pkl.gz')        
     
@@ -127,7 +127,7 @@ def Pickle_datasets():
             data = np.array(data,dtype='float32')
 
         #dic[setTemp] = data
-        outputName = 'datasets/spins/L8/Ising2d_L8_spins_T'
+        outputName = 'datasets/spins/L16/Ising2d_L16_spins_T'
         outputName += str(Tcounter)
         outputName += '.pkl.gz'
 

@@ -257,12 +257,12 @@ class RBM(object):
             for minibatch_index in xrange(n_train_batches):
                 
                 costs = train_model(minibatch_index)
-                avg_xentropy += costs
+                #avg_xentropy += costs
             
-            avg_xentropy /= n_train_batches
+            #avg_xentropy /= n_train_batches
 
-            print('Epoch %d\tXentropy =  %f' 
-                    % (epoch,avg_xentropy))
+            #print('Epoch %d\tXentropy =  %f' 
+            #        % (epoch,avg_xentropy))
         
             tools.Save_network(modelFileNameExt,self)
 
@@ -272,9 +272,9 @@ class RBM(object):
         
         """ Sample visible units from the rbm """
         
-        eq_steps = 5
-        n_measure = 10
-        record_frequency = 1
+        eq_steps = 10000
+        n_measure = 100000
+        record_frequency = 2
 
         linear_size = int(np.sqrt(self.n_v))
 
