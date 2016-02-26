@@ -26,22 +26,22 @@ def main():
     X = T.matrix()
 
     f = gzip.open(args.dataset,'rb')
-    #header, dic = cPickle.load(f)
     spins = cPickle.load(f)
     f.close()
-    #print header
     
-    temperatureIndex = args.dataset[36]
-    if (args.dataset[37] != '.'):
-        temperatureIndex += args.dataset[37]
+    for i in range(len(args.dataset)):
+        if (args.dataset[i] == 'T'):
 
-    #temp = dic['Temperatures'][args.T]
+            temperatureIndex = args.dataset[i+1]
+            if (args.dataset[i+2] != '.'):
+                temperatureIndex += args.dataset[i+2]
+            break
 
-    #train_X = theano.shared(np.asarray(dic[temp],
-    #    dtype = theano.config.floatX), borrow = True)
     train_X = theano.shared(np.asarray(spins,
         dtype = theano.config.floatX), borrow = True)
- 
+    
+    print temperatureIndex
+
     n_v = len(train_X.get_value()[0])
     
     AIS_c = 10000
@@ -61,7 +61,7 @@ def main():
 
         rbm = RBM.RBM(X,args.dataset,n_v,n_h,SimPar)
         
-        rbm.Train(train_X,X,temperatureIndex)
+        #rbm.Train(train_X,X,temperatureIndex)
 
     elif args.command == 'sample':
 
