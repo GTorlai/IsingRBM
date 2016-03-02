@@ -97,11 +97,6 @@ class RBM(object):
         # Input of the rbm
         self.input = input
 
-        #Partition Funtion
-        self.Z = 0
-        self.AIS_chains = SimPar.AISchains
-        self.AIS_sweeps = SimPar.AISsweeps
-        
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     def sample_hidden(self,v_state):

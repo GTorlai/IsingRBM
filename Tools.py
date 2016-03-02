@@ -18,8 +18,6 @@ class SimPar(object):
                       CD_order_,
                       lr_,
                       L2_par_,
-                      AISchains_,
-                      AISsweeps_
                       ):
 
         self.epochs = epochs_
@@ -27,8 +25,6 @@ class SimPar(object):
         self.CD_order = CD_order_
         self.lr = lr_
         self.L2_par = L2_par_
-        self.AISchains = AISchains_
-        self.AISsweeps = AISsweeps_
 
 #-------------------------------------------------
 
@@ -44,9 +40,6 @@ def Save_network(fileName,net):
     information['Batch Size']    = net.batch_size
     information['Epochs']        = net.epochs
     information['CD_order']      = net.CD_order
-    information['Partition Function'] = net.Z
-    information['AIS chains']       = net.AIS_chains
-    information['AIS sweeps']       = net.AIS_sweeps
 
     #Collecting everything
     fullNet['Parameters']            = net.params
@@ -99,7 +92,7 @@ def Pickle_datasets():
         
     """
     
-    path = 'datasets/raw/L16/*.txt'
+    path = 'datasets/raw/L8/*.txt'
 
     #outputName = name + str('.pkl.gz')        
     
@@ -127,7 +120,7 @@ def Pickle_datasets():
             data = np.array(data,dtype='float32')
 
         #dic[setTemp] = data
-        outputName = 'datasets/spins/L16/Ising2d_L16_spins_T'
+        outputName = 'datasets/spins/L8/Ising2d_L8_spins_x5_T'
         outputName += str(Tcounter)
         outputName += '.pkl.gz'
 

@@ -36,11 +36,11 @@ def main():
 		parser.error(errorString)	
 	
 	# Set colors
-	colors = ["go", "bo", "ro", "mo","yo"]
+	colors = ["go", "bo", "ro", "mo","yo","ko","co"]
 
 	fig = figure(1,figsize=(8,6))
 	# Loop through files and plot data
-	Lab = ['MC','RBM, 8 hidden','RBM, 16 hidden','RBM 32 hidden','RBM 64 hidden']
+	Lab = ['MC','RBM, 16  hidden','RBM, 32 hidden','RBM 64 hidden','RBM 128 hidden','RBM 256 hidden','RBM 512 hidden']
 
 
         for i,fileName in enumerate(fileNames):
@@ -63,7 +63,7 @@ def main():
         #yscale('log')
 
 	# Set Legend
-	lgd = legend(loc='upper right')
+	lgd = legend(loc='upper left')
 	if lgd: lgd.draggable(state=True) 
 
 	show()

@@ -14,7 +14,6 @@ def main():
     parser.add_argument('dataset',type=str)
     parser.add_argument('--hid',type=int)
     parser.add_argument('--net',type=str)
-    #parser.add_argument('--T',type = int)
     parser.add_argument('--ep',default = 100,type=int)
     parser.add_argument('--bs',default = 100,type=int)
     parser.add_argument('--lr',default = 0.001,type=float)
@@ -40,20 +39,14 @@ def main():
     train_X = theano.shared(np.asarray(spins,
         dtype = theano.config.floatX), borrow = True)
     
-    print temperatureIndex
-
     n_v = len(train_X.get_value()[0])
     
-    AIS_c = 10000
-    AIS_s = 1000
-
     SimPar = Tools.SimPar(args.ep,
                           args.bs,
                           args.CD,
                           args.lr,
                           args.L2,
-                          AIS_c,
-                          AIS_s)
+                          )
 
     if args.command == 'train' :
 
@@ -61,7 +54,7 @@ def main():
 
         rbm = RBM.RBM(X,args.dataset,n_v,n_h,SimPar)
         
-        #rbm.Train(train_X,X,temperatureIndex)
+        rbm.Train(train_X,X,temperatureIndex)
 
     elif args.command == 'sample':
 
