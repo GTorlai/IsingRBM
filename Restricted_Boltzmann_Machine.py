@@ -136,7 +136,7 @@ class RBM(object):
         [h_pre_act,h_act,h_state] = self.sample_hidden(v_state)
         [v_pre_act,v_act,v_state] = self.sample_visible(h_state)
 
-        return [v_act,v_state]
+        return [v_act,v_state,h_act,h_state]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -263,7 +263,7 @@ class RBM(object):
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
-    def sample(self,network,Temp):
+    def sample_Ising(self,network,Temp):
         
         """ Sample visible units from the rbm """
         
@@ -285,24 +285,21 @@ class RBM(object):
         modelFileName += str(linear_size)
         modelFileName += '_T'
         modelFileName += str(Temp)
-        modelFileName += str('_samples.txt')
- 
+        modelFileName += str('_samples_v1.txt')
+        
         output = open(modelFileName,'w')
 
         # Initialize the observer class
 
         spin0 = np.zeros((self.n_v),dtype = theano.config.floatX)
-
-        #visible_chain = theano.shared(value = np.asarray(
-        #    valid_X.get_value(borrow=True)[r_int:r_int + n_samples],
-        #        dtype = theano.config.floatX)
-        #)
+        hidden0 = np.zeros((self.n_h),dtype = theano.config.floatX)
         
         visible_chain = theano.shared(value = spin0)
-        
-        ([v_act,v_state],updates) = theano.scan(
+        hidden_chain = theano.shared(value = hidden0)
+
+        ([v_act,v_state,h_act,h_state],updates) = theano.scan(
                 self.reconstruction,
-                outputs_info =[None,visible_chain],
+                outputs_info =[None,visible_chain,None,None],
                 n_steps = record_frequency
          )
 
@@ -310,21 +307,86 @@ class RBM(object):
 
         sample_visible = theano.function(
                 inputs = [],
-                outputs = [v_act[-1],v_state[-1]],
+                outputs = [v_act[-1],v_state[-1],h_act[-1],h_state[-1]],
                 updates = updates,
         )
-       
+
         for i in range(eq_steps):
-            vis_activation, vis_state = sample_visible()
+            vis_activation, vis_state, h_activation, h_state = sample_visible()
         
         for i in range(n_measure):
-            vis_activation, vis_state = sample_visible()
+            vis_activation, vis_state, h_activation, h_state = sample_visible()
             for j in range(self.n_v):
                 output.write('%d' % vis_state[j])
                 output.write(" ")
             output.write('\n')
 
-
         output.close()
                   
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            
+    def sample_Full(self,network,Temp):
+        
+        """ Sample visible units from the rbm """
+        
+        eq_steps = 10000
+        n_measure = 100000
+        record_frequency = 10
+
+        linear_size = int(np.sqrt(self.n_v))
+
+        modelFileName = 'RBM_CD'
+        modelFileName += str(network['Informations']['CD_order'])
+        modelFileName += '_hid'
+        modelFileName += str(self.n_h)
+        modelFileName += '_bS'
+        modelFileName += str(network['Informations']['Batch Size'])
+        modelFileName += '_ep'
+        modelFileName += str(network['Informations']['Epochs'])
+        modelFileName += '_Ising2d_L'
+        modelFileName += str(linear_size)
+        modelFileName += '_T'
+        modelFileName += str(Temp)
+        modelFileName += str('_full_samples.txt')
+
+        output = open(modelFileName,'w')
+
+        # Initialize the observer class
+        
+        spin0 = np.zeros((self.n_v),dtype = theano.config.floatX)
+        hidden0 = np.zeros((self.n_h),dtype = theano.config.floatX)
+        
+        visible_chain = theano.shared(value = spin0)
+        hidden_chain = theano.shared(value = hidden0)
+
+        ([v_act,v_state,h_act,h_state],updates) = theano.scan(
+                self.reconstruction,
+                outputs_info =[None,visible_chain,None,None],
+                n_steps = record_frequency
+         )
+
+        updates.update({visible_chain: v_state[-1]})
+
+        sample_visible = theano.function(
+                inputs = [],
+                outputs = [v_act[-1],v_state[-1],h_act[-1],h_state[-1]],
+                updates = updates,
+        )
+
+        for i in range(eq_steps):
+            vis_activation, vis_state, h_activation, h_state = sample_visible()
+        
+        for i in range(n_measure):
+            vis_activation, vis_state, h_activation, h_state = sample_visible()
+            for j in range(self.n_v):
+                output.write('%d' % vis_state[j])
+                output.write(" ")
+            for j in range(self.n_h):
+                output.write('%d' % h_state[j])
+                output.write(" ")
+            output.write('\n')
+
+        output.close()
+         
+        

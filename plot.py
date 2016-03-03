@@ -63,8 +63,8 @@ def main():
         #yscale('log')
 
 	# Set Legend
-	lgd = legend(loc='upper left')
-	if lgd: lgd.draggable(state=True) 
+	#lgd = legend(loc='upper left')
+	#if lgd: lgd.draggable(state=True) 
 
 	show()
 

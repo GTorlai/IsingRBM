@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     inputFileName += to_string(L);
     inputFileName += "_T";
     inputFileName += to_string(T);
-    inputFileName += "_samples_v1.txt";
+    inputFileName += "_samples.txt";
     
     string outputFileName = "measurements/raw/RBM_CD";
     outputFileName += to_string(CD);
