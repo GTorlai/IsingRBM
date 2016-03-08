@@ -40,7 +40,7 @@ def Save_network(fileName,net):
     information['Batch Size']    = net.batch_size
     information['Epochs']        = net.epochs
     information['CD_order']      = net.CD_order
-
+    information['L2']            = net.L2_par
     #Collecting everything
     fullNet['Parameters']            = net.params
     fullNet['Informations']          = information
@@ -92,7 +92,7 @@ def Pickle_datasets():
         
     """
     
-    path = 'datasets/raw/L8/*.txt'
+    path = 'datasets/raw/L8_extended/*.txt'
 
     #outputName = name + str('.pkl.gz')        
     
@@ -120,7 +120,7 @@ def Pickle_datasets():
             data = np.array(data,dtype='float32')
 
         #dic[setTemp] = data
-        outputName = 'datasets/spins/L8/Ising2d_L8_spins_x5_T'
+        outputName = 'datasets/spins/L8/Ising2d_extended_L8_spins_T'
         outputName += str(Tcounter)
         outputName += '.pkl.gz'
 

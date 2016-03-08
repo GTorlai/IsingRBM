@@ -233,6 +233,10 @@ class RBM(object):
         modelFileName += str(self.batch_size)
         modelFileName += '_ep'
         modelFileName += str(self.epochs)
+        modelFileName += '_lr'
+        modelFileName += str(self.learning_rate)
+        modelFileName += '_L'
+        modelFileName += str(self.L2_par)
         modelFileName += '_Ising2d_L'
         modelFileName += str(linear_size)
         modelFileName += '_T'
@@ -281,11 +285,15 @@ class RBM(object):
         modelFileName += str(network['Informations']['Batch Size'])
         modelFileName += '_ep'
         modelFileName += str(network['Informations']['Epochs'])
-        modelFileName += '_Ising2d_L'
+        modelFileName += '_lr'
+        modelFileName += str(network['Informations']['Learning Rate'])
+        modelFileName += '_L'
+        modelFileName += str(network['Informations']['L2'])
+        modelFileName += '_Ising2d_extended_L'
         modelFileName += str(linear_size)
         modelFileName += '_T'
         modelFileName += str(Temp)
-        modelFileName += str('_samples_v1.txt')
+        modelFileName += str('_samples.txt')
         
         output = open(modelFileName,'w')
 
@@ -316,7 +324,7 @@ class RBM(object):
         
         for i in range(n_measure):
             vis_activation, vis_state, h_activation, h_state = sample_visible()
-            for j in range(self.n_v):
+            for j in range(self.n_v/3):
                 output.write('%d' % vis_state[j])
                 output.write(" ")
             output.write('\n')
@@ -344,6 +352,10 @@ class RBM(object):
         modelFileName += str(network['Informations']['Batch Size'])
         modelFileName += '_ep'
         modelFileName += str(network['Informations']['Epochs'])
+        modelFileName += '_lr'
+        modelFileName += str(network['Informations']['Learning Rate'])
+        modelFileName += '_L'
+        modelFileName += str(network['Informations']['L2'])
         modelFileName += '_Ising2d_L'
         modelFileName += str(linear_size)
         modelFileName += '_T'

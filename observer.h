@@ -45,6 +45,7 @@ class Observer {
         void record(Spins & sigma);
         void reset();
         void output(double T,ofstream & file);
+        void enlarge_dataset(ifstream & data, ofstream & newdata);
 
 };
 #endif

@@ -12,11 +12,14 @@ int main(int argc, char *argv[]) {
     int L;
     int T;
     int hid;
-    int CD = 15;
-    int bS = 100;
-    int ep = 100;
+    int CD;
+    int bS;
+    int ep;
     int n_temp = 21;
-        
+    string l;
+    string L2;
+    string lr;
+    
     vector<double> temperatures;    
     vector <vector<int> > dataSet;
 
@@ -49,7 +52,20 @@ int main(int argc, char *argv[]) {
         if (strcmp(argv[i],"--CD") == 0) {
            CD = atoi(argv[i+1]);
         } 
-         
+        
+        if (strcmp(argv[i],"--L2") == 0) {
+           L2 = argv[i+1];
+        } 
+        
+        if (strcmp(argv[i],"--lr") == 0) {
+           lr = argv[i+1];
+        }
+        
+        if (strcmp(argv[i],"--l") == 0) {
+           l = argv[i+1];
+        } 
+  
+ 
     }
 
     cout << "Initializing...";
@@ -72,13 +88,17 @@ int main(int argc, char *argv[]) {
     inputFileName += to_string(bS);
     inputFileName += "_ep";
     inputFileName += to_string(ep);
+    inputFileName += "_lr";
+    inputFileName += lr;
+    inputFileName += "_L";
+    inputFileName += L2;
     inputFileName += "_Ising";
     inputFileName += to_string(D);
     inputFileName += "d_L";
     inputFileName += to_string(L);
     inputFileName += "_T";
     inputFileName += to_string(T);
-    inputFileName += "_samples.txt";
+    inputFileName += "_full_samples.txt";
     
     string outputFileName = "measurements/raw/RBM_CD";
     outputFileName += to_string(CD);

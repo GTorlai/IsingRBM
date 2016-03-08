@@ -26,17 +26,20 @@ def main():
     args = parser.parse_args()
 
     X = T.matrix()
+    
+    pathToDataset = 'datasets/spins/'
+    pathToDataset += args.dataset
 
-    f = gzip.open(args.dataset,'rb')
+    f = gzip.open(pathToDataset,'rb')
     spins = cPickle.load(f)
     f.close()
     
-    for i in range(len(args.dataset)):
+    for i in range(len(pathToDataset)):
         if (args.dataset[i] == 'T'):
 
-            temperatureIndex = args.dataset[i+1]
-            if (args.dataset[i+2] != '.'):
-                temperatureIndex += args.dataset[i+2]
+            temperatureIndex = pathToDataset[i+1]
+            if (pathToDataset[i+2] != '.'):
+                temperatureIndex += pathToDataset[i+2]
             break
 
     train_X = theano.shared(np.asarray(spins,
@@ -50,24 +53,25 @@ def main():
                           args.lr,
                           args.L2,
                           )
-
+    
     if args.command == 'train' :
 
         n_h = args.hid
 
-        rbm = RBM.RBM(X,args.dataset,n_v,n_h,SimPar)
+        rbm = RBM.RBM(X,pathToDataset,n_v,n_h,SimPar)
         
         rbm.Train(train_X,X,temperatureIndex)
 
     elif args.command == 'sample':
 
-        pathToNetwork = args.net
+        pathToNetwork = 'networks/'
+        pathToNetwork += args.net
         
         Network = cPickle.load(open(pathToNetwork))
         
         n_h = Network['Informations']['Hidden Units']
 
-        rbm = RBM.RBM(X,args.dataset,n_v,n_h,SimPar,
+        rbm = RBM.RBM(X,pathToDataset,n_v,n_h,SimPar,
                 Network['Parameters'][0], Network['Parameters'][1],
                 Network['Parameters'][2])
         
@@ -81,7 +85,8 @@ def main():
         
         print "Initializing model..."
         print "\n"
-
+        
+        pathToNetwork += 'networks/'
         pathToNetwork = args.net
         
         Network = cPickle.load(open(pathToNetwork))
@@ -101,6 +106,7 @@ def main():
         modelName += str(Network['Informations']['Batch Size'])
         modelName += '_ep'
         modelName += str(Network['Informations']['Epochs'])
+        modelName += '_lr0.001_L0'
         modelName += '_Ising2d_L'
         modelName += str(linear_size)
         
@@ -114,8 +120,9 @@ def main():
         pathToOutput = 'measurements/raw/'
         pathToOutput += modelName
         pathToOutput += '_T'
-        if (temperatureIndex < 10):
-            pathToOutput += '0'
+
+        if (int(temperatureIndex) < 10):
+            pathToOutput += str(0)
         pathToOutput += str(temperatureIndex) 
         pathToOutput += str('_measure.txt')
 

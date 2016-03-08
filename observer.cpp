@@ -121,6 +121,52 @@ void Observer::GetCorrelationLength(const int & L, vector<vector<int> > &coordin
  
 }
 
+//Enlarge the dataset including spin-spin product along NN links
+void Observer::enlarge_dataset(ifstream & data, ofstream & newdata) {
+    
+    vector<vector<int> > dataSet;
+    vector<vector<int> > new_dataSet;
+    vector<int> temp1;
+    vector<int> temp2;
+
+    temp1.assign(N,0);
+    temp2.assign(3*N,0);
+    
+    for (int i=0; i<dataSize; i++) {
+        dataSet.push_back(temp1);
+        new_dataSet.push_back(temp2);
+    }
+
+    //Import dataset from file
+    for (int i=0; i<dataSize; i++) {
+        for (int j=0; j<N; j++) {
+            data >> dataSet[i][j];
+            new_dataSet[i][j] = dataSet[i][j];
+        }
+    }
+    
+    int link;
+
+    for (int i=0; i<dataSize; i++) {
+        for(int j=0; j<N; j++) {
+            for (int n=0; n<D; n++) {
+                link = dataSet[i][j]*dataSet[i][NearestNeighbors[j][n]];
+                new_dataSet[i][N+D*j+n] = link;
+            }
+        }
+    }
+
+    for (int i=0; i<dataSize; i++) {
+        for (int j=0; j<(D+1)*N; j++) {
+            newdata <<  new_dataSet[i][j];
+            newdata << " ";
+        }
+        newdata << endl;
+    }
+    newdata.close(); 
+}
+
+
 
 //Write average on file
 void Observer::output(double T, ofstream & file){
