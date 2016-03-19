@@ -6,7 +6,7 @@ import theano.tensor as T
 from theano.tensor.shared_randomstreams import RandomStreams
 import Tools as tools
 import argparse
-import time
+import timeit
 import math as m
 import os
 
@@ -271,9 +271,9 @@ class RBM(object):
         
         """ Sample visible units from the rbm """
         
-        eq_steps = 10000
-        n_measure = 100000
-        record_frequency = 2
+        eq_steps = 100000
+        n_measure = 1000000
+        record_frequency = 10
 
         linear_size = int(np.sqrt(self.n_v))
 
@@ -289,7 +289,7 @@ class RBM(object):
         modelFileName += str(network['Informations']['Learning Rate'])
         modelFileName += '_L'
         modelFileName += str(network['Informations']['L2'])
-        modelFileName += '_Ising2d_extended_L'
+        modelFileName += '_Ising2d_L'
         modelFileName += str(linear_size)
         modelFileName += '_T'
         modelFileName += str(Temp)
@@ -318,16 +318,22 @@ class RBM(object):
                 outputs = [v_act[-1],v_state[-1],h_act[-1],h_state[-1]],
                 updates = updates,
         )
+        
+        start_time = timeit.default_timer()
 
         for i in range(eq_steps):
             vis_activation, vis_state, h_activation, h_state = sample_visible()
         
         for i in range(n_measure):
             vis_activation, vis_state, h_activation, h_state = sample_visible()
-            for j in range(self.n_v/3):
+            for j in range(self.n_v):
                 output.write('%d' % vis_state[j])
                 output.write(" ")
             output.write('\n')
+        
+        end_time = timeit.default_timer()
+        print('\n\n\n')
+        print ('The code run for  %.1f sec' % (end_time - start_time))
 
         output.close()
                   
@@ -338,7 +344,7 @@ class RBM(object):
         
         """ Sample visible units from the rbm """
         
-        eq_steps = 10000
+        eq_steps = 100000
         n_measure = 100000
         record_frequency = 10
 

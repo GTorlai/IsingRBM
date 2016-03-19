@@ -79,26 +79,30 @@ int main(int argc, char *argv[]) {
     string inputFileTemp = "datasets/temperatures/Ising";
     inputFileTemp += to_string(D);
     inputFileTemp += "d_Temps.txt";
-
-    string inputFileName = "samples/RBM_CD";
-    inputFileName += to_string(CD);
-    inputFileName += "_hid";
-    inputFileName += to_string(hid);
-    inputFileName += "_bS";
-    inputFileName += to_string(bS);
-    inputFileName += "_ep";
-    inputFileName += to_string(ep);
-    inputFileName += "_lr";
-    inputFileName += lr;
-    inputFileName += "_L";
-    inputFileName += L2;
-    inputFileName += "_Ising";
-    inputFileName += to_string(D);
-    inputFileName += "d_L";
-    inputFileName += to_string(L);
-    inputFileName += "_T";
+    
+    
+    string inputFileName = "samples/MC_Ising2d_L8_ergodic_T";
     inputFileName += to_string(T);
-    inputFileName += "_full_samples.txt";
+    inputFileName += ".txt";
+    //string inputFileName = "samples/RBM_CD";
+    //inputFileName += to_string(CD);
+    //inputFileName += "_hid";
+    //inputFileName += to_string(hid);
+    //inputFileName += "_bS";
+    //inputFileName += to_string(bS);
+    //inputFileName += "_ep";
+    //inputFileName += to_string(ep);
+    //inputFileName += "_lr";
+    //inputFileName += lr;
+    //inputFileName += "_L";
+    //inputFileName += L2;
+    //inputFileName += "_Ising";
+    //inputFileName += to_string(D);
+    //inputFileName += "d_L";
+    //inputFileName += to_string(L);
+    //inputFileName += "_T";
+    //inputFileName += to_string(T);
+    //inputFileName += "_samples.txt";
     
     string outputFileName = "measurements/raw/RBM_CD";
     outputFileName += to_string(CD);
@@ -128,9 +132,13 @@ int main(int argc, char *argv[]) {
 
     vector<int> temp1;
     temp1.assign(sigma.N,0);
+    //vector<int> temp2;
+    //temp2.assign(3*sigma.N,0);
+    //vector<vector<int> > extended;
 
     for (int i=0; i<MCS; i++) {
         dataSet.push_back(temp1);
+        //extended.push_back(temp2);
     }
 
     cout << "done" << endl;
@@ -144,9 +152,16 @@ int main(int argc, char *argv[]) {
     for (int i=0; i<MCS; i++) {
         for (int j=0; j<sigma.N; j++) {
             inputFile >> dataSet[i][j];
+            //inputFile >> extended[i][j];
         }
     }
-
+    
+    //for (int i=0; i<MCS; i++) {
+    //    for (int j=0; j<sigma.N; j++) {
+    //        dataSet[i][j] = extended[i][j];
+    //    }
+    //}
+    
     cout << "Running...";
     
     for (int k = 0; k<MCS; k++) {

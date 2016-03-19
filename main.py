@@ -9,6 +9,7 @@ import numpy as np
 import Tools
 from pylab import loadtxt
 
+
 def main():
     
     parser = argparse.ArgumentParser()
@@ -35,7 +36,7 @@ def main():
     f.close()
     
     for i in range(len(pathToDataset)):
-        if (args.dataset[i] == 'T'):
+        if (pathToDataset[i] == 'T'):
 
             temperatureIndex = pathToDataset[i+1]
             if (pathToDataset[i+2] != '.'):
@@ -86,8 +87,8 @@ def main():
         print "Initializing model..."
         print "\n"
         
-        pathToNetwork += 'networks/'
-        pathToNetwork = args.net
+        pathToNetwork = 'networks/'
+        pathToNetwork += args.net
         
         Network = cPickle.load(open(pathToNetwork))
         
@@ -106,7 +107,7 @@ def main():
         modelName += str(Network['Informations']['Batch Size'])
         modelName += '_ep'
         modelName += str(Network['Informations']['Epochs'])
-        modelName += '_lr0.001_L0'
+        modelName += '_lr0.01_L0.0'
         modelName += '_Ising2d_L'
         modelName += str(linear_size)
         

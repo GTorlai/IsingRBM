@@ -6,7 +6,7 @@ import theano.tensor as T
 import matplotlib.pyplot as plt
 import glob
 import argparse
-
+from pylab import loadtxt
 #-------------------------------------------------
 
 class SimPar(object):
@@ -58,11 +58,7 @@ def Print_network(netName):
     
     """ Print information of the network """
 
-    fileName = 'networks/'
-    fileName += str(netName)
-    fileName += str('_model.pkl')
-
-    f = open(fileName)
+    f = open(netName)
     dictionary = cPickle.load(f)
     f.close()
 
@@ -73,10 +69,50 @@ def Print_network(netName):
     for par in dictionary['Informations']:
         print (par,dictionary['Informations'][par])
     
-    for par in dictionary['Parameters']:
-        print par
-        print par.get_value(borrow=True).shape
+    #for par in dictionary['Parameters']:
+    W = dictionary['Parameters'][0].get_value(borrow=True)
+    for j in range(64):
 
+        for i in range(int(dictionary['Informations']['Hidden Units'])):
+
+            print ('%f' % W[j][i])
+            print ('\n')
+
+#------------------------------------------------
+
+def Parameter_histogram(network,parameter):
+    
+    """ Print information of the network """
+
+    f = open(network)
+    dictionary = cPickle.load(f)
+    f.close()
+
+    print('*****************************')
+    print('           NETWORK')
+    print('\nInfos:')
+    
+
+    if (parameter == 'W'):
+        temp = dictionary['Parameters'][0].get_value(borrow=True)
+        par = []
+        for j in range(64):
+            for i in range(int(dictionary['Informations']['Hidden Units'])):
+                par.append(temp[j][i])
+
+        par = np.array(par)
+    
+    elif (parameter == 'b'):
+        par = dictionary['Parameters'][1].get_value(borrow=True)
+    
+    elif (parameter == 'c'):
+        par = dictionary['Parameters'][2].get_value(borrow=True)
+
+    plt.hist(par, bins=100, normed=False)
+    plt.title("%s Histogram" % parameter)
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.show()
 
 #-------------------------------------------------
 
@@ -92,14 +128,9 @@ def Pickle_datasets():
         
     """
     
-    path = 'datasets/raw/L8_extended/*.txt'
+    path = 'datasets/raw/L8_ergodic/*.txt'
 
-    #outputName = name + str('.pkl.gz')        
-    
     files = glob.glob(path)
-    #dic = {}
-    #sizePath = 9
-    #tempList = []
     Tcounter = 0
 
     for fileName in files:
@@ -108,8 +139,6 @@ def Pickle_datasets():
             print 'Opening file:'
             print fileName
 
-            #setTemp = float(fileName[sizePath+7:-4])
-            #tempList.append(setTemp)
             data = []
 
             for images in f:
@@ -119,8 +148,7 @@ def Pickle_datasets():
                 
             data = np.array(data,dtype='float32')
 
-        #dic[setTemp] = data
-        outputName = 'datasets/spins/L8/Ising2d_extended_L8_spins_T'
+        outputName = 'datasets/spins/L8/Ising2d_ergodic_L8_spins_T'
         outputName += str(Tcounter)
         outputName += '.pkl.gz'
 
@@ -129,20 +157,6 @@ def Pickle_datasets():
         output.close()
         Tcounter += 1
 
-    #dic['Temperatures'] = tempList
-    #headerPath = 'datasets/header.dat' 
-    #with open (headerPath, "r") as myfile:
-    #    header = myfile.read()
-            
-    # Build test set
-    #fullSet = (header,dic)
-
-    # Pickle and gzip the dataset 
-    #with gzip.open(outputName, 'wb') as output:
-    #    cPickle.dump(fullSet, output, protocol=cPickle.HIGHEST_PROTOCOL)
-
-    #output.close()
-    
 #------------------------------------------------
 
 def Format_Dataset_CPP(fileName):
@@ -173,8 +187,6 @@ def Format_Dataset_CPP(fileName):
     output.close()
 
 
-    
-    #print len(dic[dic['Temperatures'][0]][0])
 #------------------------------------------------
 
 if __name__ == "__main__":
@@ -184,6 +196,7 @@ if __name__ == "__main__":
     parser.add_argument('command',type=str)
     parser.add_argument('--file',type=str)
     parser.add_argument('--model',type=str)
+    parser.add_argument('--par',type=str)
 
     args = parser.parse_args()
 
@@ -196,3 +209,6 @@ if __name__ == "__main__":
     elif args.command == 'print':
         Print_network(args.model)
     
+    elif args.command == 'histogram':
+        Parameter_histogram(args.model,args.par)
+

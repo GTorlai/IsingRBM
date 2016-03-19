@@ -9,4 +9,5 @@ networks/*
 .DS_Store
 measure
 runs
-sync_sharcnet.sh
+*.sh
+plot.py
