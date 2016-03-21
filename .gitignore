@@ -11,3 +11,4 @@ measure
 runs
 *.sh
 plot.py
+analysis/*

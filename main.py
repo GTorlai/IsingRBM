@@ -7,6 +7,7 @@ import gzip
 import cPickle
 import numpy as np
 import Tools
+import AIS as AIS
 from pylab import loadtxt
 
 
@@ -23,6 +24,10 @@ def main():
     parser.add_argument('--CD',default = 1,type=int)
     parser.add_argument('--L2',default = 0.001, type=float)
     parser.add_argument('--l',type=str)
+    
+    #AIS parameters
+    parser.add_argument('--sw',type=int)
+    parser.add_argument('--k',type=int)
 
     args = parser.parse_args()
 
@@ -78,12 +83,28 @@ def main():
         
         rbm.sample(Network,temperatureIndex,args.l)
 
-        #if (args.l == 'visible'):
-        #    rbm.sample_Ising(Network,temperatureIndex)
+    elif args.command == 'partitionFunction':
+
+        pathToNetwork = 'networks/'
+        pathToNetwork += args.net
         
-        #if (args.l == 'full'):
-        #    rbm.sample_Full(Network,temperatureIndex)
-    
+        Network = cPickle.load(open(pathToNetwork))
+        
+        n_h = Network['Informations']['Hidden Units']
+        
+        parameters = [Network['Parameters'][0],
+                      Network['Parameters'][1],
+                      Network['Parameters'][2]]
+
+        annealed_Z = AIS.AnnealedImportanceSampling(n_v,n_h,args.k,args.sw)
+        annealed_Z.get_parameters(parameters)
+        annealed_Z.getZ()
+        annealed_Z.outputLogZ(Network,temperatureIndex)
+
+        #[logZ,d_logZ] = annealed_Z.outputLogZ()
+
+        #print ('\n\nPartition Function: %f += %f\n\n' % (logZ,d_logZ))
+
     elif args.command == 'measure':
         
         print "Initializing model..."

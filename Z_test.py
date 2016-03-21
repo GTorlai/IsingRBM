@@ -66,8 +66,8 @@ def main():
 
     n_hidden = 4
     n_visible = 4
-    k = 100
-    AIS_run = 100
+    k = 1000
+    AIS_run = 1000
 
     X = T.matrix()
     SimPar = Tools.SimPar(1,
@@ -91,10 +91,13 @@ def main():
 
     print ('\nThe exact Log-Partition Function is %f: \n' % np.log(exact.Z))
     
-    annealed = AIS.AnnealedImportanceSampling(n_visible,n_hidden,k)
+    annealed = AIS.AnnealedImportanceSampling(n_visible,n_hidden,k,AIS_run)
     annealed.get_parameters(rbm.params)
-    AIS_Z = annealed.getZ(AIS_run)
-    print ('Annealed Log-Partition Funcion: %f' % np.log(AIS_Z))
+    annealed.getZ()
+
+    [logZ,dlogZ] = annealed.outputLogZ()
+    
+    print ('Annealed Log-Partition Funcion: %f +- %f' % (logZ,dlogZ))
 
 
 if __name__ == "__main__":

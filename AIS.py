@@ -5,7 +5,7 @@ import theano
 
 class AnnealedImportanceSampling(object):
 
-    def __init__(self,n_visible,n_hidden,K):
+    def __init__(self,n_visible,n_hidden,K,M):
 
         self.n_v = n_visible
         self.n_h = n_hidden
@@ -32,14 +32,26 @@ class AnnealedImportanceSampling(object):
         self.beta = []
 
         self.w = []
-
         self.Z = 0.0
+        self.dZ = 0.0
 
         self.K = K
+        self.M = M
 
-        for i in range(self.K):
-            self.beta.append(1.*i/self.K)
+        
+        for i in range(self.K/10):
+            self.beta.append(0.5*i/(self.K/10))
+        
+        for i in range(4*self.K/10):
+            self.beta.append(0.5+0.4*i/(4*self.K/10))
+        
+        for i in range(self.K/2):
+            self.beta.append(0.9+0.1*i/(self.K/2))
         self.beta.append(1.)
+ 
+        #for i in range(self.K):
+        #    self.beta.append(1.*i/self.K)
+        #self.beta.append(1.)
 
 
     def get_parameters(self,params):
@@ -104,24 +116,74 @@ class AnnealedImportanceSampling(object):
 
         for k in range(1,self.K+1):
 
-            for i in range(1):
+            for i in range(10):
                 self.Gibbs_sampler(k-1)
 
             W *= self.get_prob(k) / self.get_prob(k-1)
 
         return W
 
-    def getZ(self,M):
-
-        for i in range(M):
-            #print ('AIS run # %d' % i)
+    def getZ(self):
+        
+        for i in range(self.M):
+            
+            print ('Sweep: %d' % i)
             self.BaseRate_sampler()
             self.w.append(self.sweep())
 
         r = np.mean(self.w)
         
         self.Z = self.Z_BR * r
-        return self.Z
+       
+        #delta_r = 0.0
+        #
+        #for i in range(self.M):
+        #    delta_r += (1.0*self.w[i]-r)**2
+        #
+        #d_r = m.sqrt(delta_r/(self.M*(self.M-1)))
+        #
+        #self.dZ = self.Z_BR * d_r
+        #print self.Z
+        #print self.dZ
+
+    def outputLogZ(self,network,T):
+
+        logZ = m.log(self.Z)
+        
+        linear_size = int(np.sqrt(self.n_v))
+        fileName = 'partition_functions/hid'
+        fileName += str(self.n_h)
+        fileName += '/sw'
+        fileName += str(self.M)
+        fileName += '/Z_k'
+        fileName += str(self.K)
+        fileName += '_sw'
+        fileName += str(self.M)
+        #fileName = 'partition_functions/Z_CD'
+        #fileName += str(network['Informations']['CD_order'])
+        #fileName += '_hid'
+        #fileName += str(self.n_h)
+        #fileName += '_bS'
+        #fileName += str(network['Informations']['Batch Size'])
+        #fileName += '_ep'
+        #fileName += str(network['Informations']['Epochs'])
+        #fileName += '_lr'
+        #fileName += str(network['Informations']['Learning Rate'])
+        #fileName += '_L'
+        #fileName += str(network['Informations']['L2'])
+        #fileName += '_Ising2d_L'
+        #fileName += str(linear_size)
+        fileName += '_T'
+        fileName += str(T)
+        fileName += '.txt'
+        
+        output = open(fileName,'w')
+        output.write('%f' % logZ)
+        output.close()
+
+        #dlogZ = 1.0/(self.Z) * self.dZ
+        #return logZ
+        #return [logZ,dlogZ]
 
 
 def sigmoid(x):
