@@ -39,16 +39,16 @@ class RBM(object):
         self.n_h = n_h
         
         # Print stuff
-        print ('\n*****************************\n')
-        print ('Model: %s\n' % self.model)
-        print ('Visible units: %d\n' % self.n_v)
-        print ('Hidden units: %d\n\n' % self.n_h)
-        print ('Hyper-parameters:\n') 
-        print ('\t- Epochs: %d\n' % self.epochs)
-        print ('\t- Batch size: %d\n' % self.batch_size)
-        print ('\t- Learning rate: %f\n' % self.learning_rate)
-        print ('\t- CD order: %d\n' % self.CD_order)
-        print ('\t- Regularization magnitude: %f\n' % self.L2_par)
+       # print ('\n*****************************\n')
+       # print ('Model: %s\n' % self.model)
+       # print ('Visible units: %d\n' % self.n_v)
+       # print ('Hidden units: %d\n\n' % self.n_h)
+       # print ('Hyper-parameters:\n') 
+       # print ('\t- Epochs: %d\n' % self.epochs)
+       # print ('\t- Batch size: %d\n' % self.batch_size)
+       # print ('\t- Learning rate: %f\n' % self.learning_rate)
+       # print ('\t- CD order: %d\n' % self.CD_order)
+       # print ('\t- Regularization magnitude: %f\n' % self.L2_par)
 
         # Numpy & Theano random number generators
         np_rng = np.random.RandomState(1234)
