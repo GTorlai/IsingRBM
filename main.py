@@ -76,11 +76,13 @@ def main():
                 Network['Parameters'][0], Network['Parameters'][1],
                 Network['Parameters'][2])
         
-        if (args.l == 'visible'):
-            rbm.sample_Ising(Network,temperatureIndex)
+        rbm.sample(Network,temperatureIndex,args.l)
+
+        #if (args.l == 'visible'):
+        #    rbm.sample_Ising(Network,temperatureIndex)
         
-        if (args.l == 'full'):
-            rbm.sample_Full(Network,temperatureIndex)
+        #if (args.l == 'full'):
+        #    rbm.sample_Full(Network,temperatureIndex)
     
     elif args.command == 'measure':
         
