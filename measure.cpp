@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
 
-    
+    // Variables 
     int MCS = 100000;
     int D = 2;
     int L;
@@ -16,15 +16,21 @@ int main(int argc, char *argv[]) {
     int bS;
     int ep;
     int n_temp = 21;
-    string l;
+    string model;
     string L2;
     string lr;
     
     vector<double> temperatures;    
     vector <vector<int> > dataSet;
 
+    // Read inputs from command line
+
     for (int i=1;i<argc;i++) {
         
+        if (strcmp(argv[i],"--model") == 0) {
+           model = argv[i+1];
+        }
+  
         if (strcmp(argv[i],"--D") == 0) {
            D = atoi(argv[i+1]);
         }
@@ -60,85 +66,100 @@ int main(int argc, char *argv[]) {
         if (strcmp(argv[i],"--lr") == 0) {
            lr = argv[i+1];
         }
-        
-        if (strcmp(argv[i],"--l") == 0) {
-           l = argv[i+1];
-        } 
-  
- 
     }
 
-    cout << "Initializing...";
-
+    cout << endl << "Performing measurement at temperature " << T << endl;
+    
+    //Initializing classes
     Hypercube cube(L,D);
 
     Spins sigma;
     Observer obs(sigma,cube,MCS);
 
-
-    string inputFileTemp = "datasets/temperatures/Ising";
+    string inputFileTemp = "data/datasets/Ising";
     inputFileTemp += to_string(D);
-    inputFileTemp += "d_Temps.txt";
+    inputFileTemp += "d_Temperatures.txt";
     
-    
-    //string inputFileName = "samples/MC_Ising2d_L8_ergodic_T";
-    //inputFileName += to_string(T);
-    //inputFileName += ".txt";
-    string inputFileName = "samples/RBM_CD";
-    inputFileName += to_string(CD);
-    inputFileName += "_hid";
-    inputFileName += to_string(hid);
-    inputFileName += "_bS";
-    inputFileName += to_string(bS);
-    inputFileName += "_ep";
-    inputFileName += to_string(ep);
-    inputFileName += "_lr";
-    inputFileName += lr;
-    inputFileName += "_L";
-    inputFileName += L2;
-    inputFileName += "_Ising";
-    inputFileName += to_string(D);
-    inputFileName += "d_L";
-    inputFileName += to_string(L);
-    inputFileName += "_T";
-    inputFileName += to_string(T);
-    inputFileName += "_visible_samples.txt";
-    
-    string outputFileName = "measurements/raw/RBM_CD";
-    outputFileName += to_string(CD);
-    outputFileName += "_hid";
-    outputFileName += to_string(hid);
-    outputFileName += "_bS";
-    outputFileName += to_string(bS);
-    outputFileName += "_ep";
-    outputFileName += to_string(ep);
-    outputFileName += "_Ising";
-    outputFileName += to_string(D);
-    outputFileName += "d_L";
-    outputFileName += to_string(L);
-    outputFileName += "_T";
-    if (T < 10) {
-        outputFileName += "0";
+    if (model == "MC") {
+
+        string inputFileName = "data/samples/L";
+        inputFileName += to_string(L);
+        inputFileName += "/MC_Ising";
+        inputFileName += to_string(D);
+        inputFileName += "d_L";
+        inputFileName += to_string(L);
+        inputFileName += "_T"
+        inputFileName += to_string(T);
+        inputFileName += ".txt";
+        
+        string outputFileName = "data/measurements/temp/MC";
+        outputFileName += "_Ising";
+        outputFileName += to_string(D);
+        outputFileName += "d_L";
+        outputFileName += to_string(L);
+        outputFileName += "_T";
+        if (T < 10) {
+            outputFileName += "0";
+        }
+        outputFileName += to_string(T);
+        outputFileName += "_measure.txt";
     }
-    outputFileName += to_string(T);
-    outputFileName += "_measure.txt";
+
+    else if (model =="RBM") {
+        string inputFileName = "data/samples/L";
+        inputFileName += to_string(L);
+        inputFileName += "/RBM_CD";
+        inputFileName += to_string(CD);
+        inputFileName += "_hid";
+        inputFileName += to_string(hid);
+        inputFileName += "_bS";
+        inputFileName += to_string(bS);
+        inputFileName += "_ep";
+        inputFileName += to_string(ep);
+        inputFileName += "_lr";
+        inputFileName += lr;
+        inputFileName += "_L";
+        inputFileName += L2;
+        inputFileName += "_Ising";
+        inputFileName += to_string(D);
+        inputFileName += "d_L";
+        inputFileName += to_string(L);
+        inputFileName += "_T";
+        inputFileName += to_string(T);
+        inputFileName += "_visible_samples.txt";
+        
+        string outputFileName = "data/measurements/temp/RBM_CD";
+        outputFileName += to_string(CD);
+        outputFileName += "_hid";
+        outputFileName += to_string(hid);
+        outputFileName += "_bS";
+        outputFileName += to_string(bS);
+        outputFileName += "_ep";
+        outputFileName += to_string(ep);
+        outputFileName += "_Ising";
+        outputFileName += to_string(D);
+        outputFileName += "d_L";
+        outputFileName += to_string(L);
+        outputFileName += "_T";
+        if (T < 10) {
+            outputFileName += "0";
+        }
+        outputFileName += to_string(T);
+        outputFileName += "_measure.txt";
+    }
     
+    //Open files
     ifstream inputTemp(inputFileTemp, std::ios_base::in);
     ifstream inputFile(inputFileName, std::ios_base::in);
     ofstream outputFile(outputFileName);
     
-
     temperatures.assign(n_temp,0.0);
 
     vector<int> temp1;
     temp1.assign(sigma.N,0);
-    //vector<int> temp2;
-    //temp2.assign(3*sigma.N,0);
-    //vector<vector<int> > extended;
 
     for (int i=0; i<MCS; i++) {
         dataSet.push_back(temp1);
-        //extended.push_back(temp2);
     }
 
     cout << "done" << endl;
@@ -152,17 +173,8 @@ int main(int argc, char *argv[]) {
     for (int i=0; i<MCS; i++) {
         for (int j=0; j<sigma.N; j++) {
             inputFile >> dataSet[i][j];
-            //inputFile >> extended[i][j];
         }
     }
-    
-    //for (int i=0; i<MCS; i++) {
-    //    for (int j=0; j<sigma.N; j++) {
-    //        dataSet[i][j] = extended[i][j];
-    //    }
-    //}
-    
-    cout << "Running...";
     
     for (int k = 0; k<MCS; k++) {
             
@@ -171,8 +183,6 @@ int main(int argc, char *argv[]) {
         obs.GetMagnetization(sigma);
         obs.record(sigma);
     }
-
-    cout << "done" << endl;
 
     obs.GetCorrelationLength(L,cube.Coordinates);
     obs.output(temperatures[T],outputFile);

@@ -12,8 +12,9 @@ using namespace std;
 class Spins {
     
     public:
-    
-        int N;  //Number of spins
+        
+        //Number of spins
+        int N;
 
         //Vector containing the spins values
         vector<int> spin;

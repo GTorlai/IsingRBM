@@ -1,5 +1,4 @@
 #include "spins.h"
-//#include "MersenneTwister.h"
 
 //Constructor 1
 Spins::Spins(){
@@ -44,6 +43,7 @@ void Spins::print(){
     cout<<endl;
 
 }//print
+
 
 //Print configuration on file
 void Spins::filePrint(ofstream & file){
