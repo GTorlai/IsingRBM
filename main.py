@@ -1,6 +1,6 @@
 import Restricted_Boltzmann_Machine as RBM
-import utilities.network
-import utilities.dataset
+import utilities.network as NET
+import utilities.dataset as DAT
 #import RBM_stat_model as RBM_SM
 import argparse
 import theano
@@ -37,19 +37,19 @@ def main():
     X = T.matrix()
     n_v = args.L**2
 
-    Network = utilities.network.Network(n_v,
-                  args.model,
-                  args.hid,
-                  args.ep,
-                  args.bs,
-                  args.CD,
-                  args.lr,
-                  args.L2,
-                  args.T)
+    Network = NET.Network(n_v,
+                         args.model,
+                         args.hid,
+                         args.ep,
+                         args.bs,
+                         args.CD,
+                         args.lr,
+                         args.L2,
+                         args.T)
  
     if args.command == 'train' :
         
-        pathToDataset = utilities.dataset.build_dataPath(args.model,args.T,args.L)
+        pathToDataset = DAT.build_dataPath(args.model,args.T,args.L)
 
         f = gzip.open(pathToDataset,'rb')
         spins = cPickle.load(f)
@@ -58,23 +58,23 @@ def main():
         train_set = theano.shared(np.asarray(spins,
             dtype = theano.config.floatX), borrow = True)
         
-        utilities.network.print_network(Network.infos)
+        #NET.print_network(Network.infos)
         
-        rbm = RBM.RBM(X,Network.infos)
+        rbm = RBM.RBM(X,Network)
         
         rbm.Train(train_set,X)
 
     elif args.command == 'sample':
         
-        pathToNetwork = utilities.network.build_networkPath(Network)
+        pathToNetwork = NET.build_networkPath(Network)
         
         Trained_Network = cPickle.load(open(pathToNetwork))
                 
         Network.load(Trained_Network)
 
-        utilities.network.print_network(Network.infos)
+        NET.print_network(Network.infos)
  
-        rbm = RBM.RBM(X,Network.infos)
+        rbm = RBM.RBM(X,Network)
         
         rbm.sample(args.l)
 

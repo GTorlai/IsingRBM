@@ -1,7 +1,7 @@
 import math as m
 import numpy as np
 import theano
-import network
+import network as NET
 import argparse
 import cPickle
 
@@ -34,9 +34,9 @@ class Z(object):
         
         """ Load RBM parameters  """
  
-        self.W = net.infos['Parameters'][0].eval()
-        self.b = net.infos['Parameters'][1].eval()
-        self.c = net.infos['Parameters'][2].eval()
+        self.W = net['Weights'].eval()
+        self.b = net['V Bias'].eval()
+        self.c = net['H Bias'].eval()
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     
     n_v = args.L**2
 
-    Network = network.Network(n_v,
+    Network = NET.Network(n_v,
                   args.model,
                   args.hid,
                   args.ep,
@@ -111,21 +111,19 @@ if __name__ == "__main__":
                   args.T)
  
     pathToNetwork = '../'
-    pathToNetwork += network.build_networkPath(Network)
-        
-    Trained_Network = cPickle.load(open(pathToNetwork))
+    pathToNetwork += NET.build_networkPath(Network)
+     
+    Trained_Network = cPickle.load(open(pathToNetwork,'rb'))
                 
     Network.load(Trained_Network)
 
     exact = Z(n_v,args.hid)
-    exact.get_parameters(Network)
+    exact.get_parameters(Network.infos)
     exact.get_Z()
     logZ = np.log(exact.Z)
     
     print ('\nLog Partition Function: %f' % logZ) 
     
-    #network.update_logZ(pathToNetwork,Network,logZ)
-
+    NET.update_logZ(pathToNetwork,Network,logZ)
 
 #-------------------------------------------------
-

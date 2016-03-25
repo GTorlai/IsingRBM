@@ -4,8 +4,7 @@ import numpy as np
 import theano
 import theano.tensor as T
 from theano.tensor.shared_randomstreams import RandomStreams
-#import Tools as tools
-import utilities.network
+import utilities.network as NET
 import argparse
 import math as m
 import os
@@ -27,20 +26,20 @@ class RBM(object):
         self.Network = Network
 
         # Learning parameters
-        self.epochs        = Network['Informations']['Epochs']
-        self.batch_size    = Network['Informations']['Batch Size']
-        self.learning_rate = Network['Informations']['Learning Rate']
-        self.CD_order      = Network['Informations']['CD']
-        self.L2_par        = Network['Informations']['L2']
+        self.epochs        = Network.infos['Epochs']
+        self.batch_size    = Network.infos['Batch Size']
+        self.learning_rate = Network.infos['Learning Rate']
+        self.CD_order      = Network.infos['CD']
+        self.L2_par        = Network.infos['L2']
         
         # Number of visible and hidden unites
-        self.n_v = Network['Informations']['Visible Units']
-        self.n_h = Network['Informations']['Hidden Units']
+        self.n_v = Network.infos['Visible Units']
+        self.n_h = Network.infos['Hidden Units']
         
         # Network Parameters
-        W = Network['Parameters'][0]
-        b = Network['Parameters'][1]
-        c = Network['Parameters'][2]
+        W = Network.infos['Weights']
+        b = Network.infos['V Bias']
+        c = Network.infos['H Bias']
 
         # Numpy & Theano random number generators
         np_rng = np.random.RandomState(1234)
@@ -201,9 +200,9 @@ class RBM(object):
         
         epoch = 0
        
-        fileName = utilities.network.build_fileName(self.Network,'model')
+        fileName = NET.build_fileName(self.Network,'model')
         
-        utilities.network.save_network(self.Network,fileName)
+        NET.save_network(self.Network,fileName)
 
         print ('\n*****************************\n')
         print ('..training')
@@ -212,15 +211,15 @@ class RBM(object):
         while (epoch < self.epochs):
 
             epoch = epoch + 1
-            
+            print epoch         
             for minibatch_index in xrange(n_train_batches):
                 
-                costs = train_model(minibatch_index)
+                train_model(minibatch_index)
             
-            utilities.network.update_parameters(fileName,
-                                        self.Network,
-                                        self.params)
-
+            NET.update_parameters(fileName,
+                                 self.Network,
+                                 self.params)
+    
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
     def sample(self,layer):
@@ -231,8 +230,8 @@ class RBM(object):
         n_measure = 100000
         record_frequency = 10
 
-        V_fileName = utilities.network.build_fileName(self.Network,'visible_samples')
-        H_fileName = utilities.network.build_fileName(self.Network,'hidden_samples')
+        V_fileName = NET.build_fileName(self.Network,'visible_samples')
+        H_fileName = NET.build_fileName(self.Network,'hidden_samples')
 
         outputVisible = open(V_fileName,'w')
                 

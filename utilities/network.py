@@ -3,6 +3,7 @@ import cPickle
 import numpy as np
 import theano
 import argparse
+import glob
 
 #-------------------------------------------------
 
@@ -28,41 +29,32 @@ class Network(object):
         
         # Write infos dictionary
         
-        info = {}
+        self.infos = {}
 
-        info['Hidden Units']  = n_h
-        info['Visible Units'] = n_v
-        info['Model']         = model
-        info['Temperature']   = T_index
-        info['Learning Rate'] = learning_rate
-        info['Batch Size']    = batch_size
-        info['Epochs']        = epochs
-        info['CD']            = CD
-        info['L2']            = L2
-        info['logZ']          = logZ
+        self.infos['Hidden Units']  = n_h
+        self.infos['Visible Units'] = n_v
+        self.infos['Model']         = model
+        self.infos['Temperature']   = T_index
+        self.infos['Learning Rate'] = learning_rate
+        self.infos['Batch Size']    = batch_size
+        self.infos['Epochs']        = epochs
+        self.infos['CD']            = CD
+        self.infos['L2']            = L2
+        self.infos['logZ']          = logZ
         
         # Write parameters dictionary
 
-        param = {}
-        
-        param[0] = W
-        param[1]  = b
-        param[2]  = c
+        self.infos['Weights'] = W
+        self.infos['V Bias']  = b
+        self.infos['H Bias']  = c
 
-        # Write network dictionary
-        
-        self.infos = {}
-
-        self.infos['Parameters']   = param
-        self.infos['Informations'] = info
-        
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     def load(self,trained_net):
 
-        self.infos['Parameters'][0] = trained_net.infos['Parameters'][0]
-        self.infos['Parameters'][1] = trained_net.infos['Parameters'][1]
-        self.infos['Parameters'][2] = trained_net.infos['Parameters'][2]
+        self.infos['Weights'] = trained_net['Weights']
+        self.infos['V Bias'] = trained_net['V Bias']
+        self.infos['H Bias'] = trained_net['H Bias']
  
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -71,7 +63,7 @@ def save_network(network,fileName):
     """ Save network info on pickled file """
 
     f = open(fileName,'w')
-    cPickle.dump(network,f)
+    cPickle.dump(network.infos,f)
     f.close()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,12 +72,12 @@ def update_parameters(fileName,network,new_parameters):
 
     """ Update values of parameters and write on file"""
 
-    network['Parameters'][0] = new_parameters[0]
-    network['Parameters'][1]  = new_parameters[1]
-    network['Parameters'][2]  = new_parameters[2]
+    network.infos['Weights'] = new_parameters[0]
+    network.infos['V Bias']  = new_parameters[1]
+    network.infos['H Bias']  = new_parameters[2]
 
-    f = open(fileName,'w')
-    cPickle.dump(network,f)
+    f = open(fileName,'wb')
+    cPickle.dump(network.infos,f)
     f.close()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,10 +86,10 @@ def update_logZ(fileName,network,logZ):
 
     """ Update values of parameters and write on file"""
 
-    network.infos['Informations']['logZ'] = logZ
+    network.infos['logZ'] = logZ
 
-    f = open(fileName,'w')
-    cPickle.dump(network,f)
+    f = open(fileName,'wb')
+    cPickle.dump(network.infos,f)
     f.close()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,27 +99,27 @@ def build_fileName(network,extension):
     """ Save network info on pickled file """
 
     name = 'RBM_CD'
-    name += str(network['Informations']['CD'])
+    name += str(network.infos['CD'])
     name += '_hid'
-    name += str(network['Informations']['Hidden Units'])
+    name += str(network.infos['Hidden Units'])
     name += '_bS'
-    name += str(network['Informations']['Batch Size'])
+    name += str(network.infos['Batch Size'])
     name += '_ep'
-    name += str(network['Informations']['Epochs'])
+    name += str(network.infos['Epochs'])
     name += '_lr'
-    name += str(network['Informations']['Learning Rate'])
+    name += str(network.infos['Learning Rate'])
     name += '_L'
-    name += str(network['Informations']['L2'])
+    name += str(network.infos['L2'])
     name += '_'
-    name += network['Informations']['Model']
+    name += network.infos['Model']
     name += '_L'
-    name += str(int(np.sqrt(network['Informations']['Visible Units'])))
+    name += str(int(np.sqrt(network.infos['Visible Units'])))
     name += '_T'
-    if (network['Informations']['Temperature']<10):
+    if (network.infos['Temperature']<10):
         name += '0'
-        name += str(network['Informations']['Temperature'])
+        name += str(network.infos['Temperature'])
     else:
-        name += str(network['Informations']['Temperature'])
+        name += str(network.infos['Temperature'])
     name += '_'
     name += extension
     if (extension == 'model'):
@@ -136,20 +128,21 @@ def build_fileName(network,extension):
         name += '.txt'
 
     return name
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def build_networkPath(network):
 
     name = 'data/networks/L'
-    name += str(int(np.sqrt(network.infos['Informations']['Visible Units'])))
+    name += str(int(np.sqrt(network.infos['Visible Units'])))
     name += '/'
-    name += build_fileName(network.infos,'model')
+    name += build_fileName(network,'model')
     
     return name
 
 #------------------------------------------------
 
-def print_network(net):
+def print_network(netInfos):
     
     """ Print the network infos """
     
@@ -159,35 +152,60 @@ def print_network(net):
     print('\n\n')
     
     print ('RBM Informations\n')
-    print ('\tModel: %s\n' % net['Informations']['Model'])
-    print ('\tTemperature Index: %d\n' % net['Informations']['Temperature'])
-    print ('\tVisible units: %d\n' % net['Informations']['Visible Units'])
-    print ('\tHidden units: %d\n' % net['Informations']['Hidden Units'])
+    print ('\tModel: %s\n' % netInfos['Model'])
+    print ('\tTemperature Index: %d\n' % netInfos['Temperature'])
+    print ('\tVisible units: %d\n' % netInfos['Visible Units'])
+    print ('\tHidden units: %d\n' % netInfos['Hidden Units'])
     print ('\n\nLearning Parameters:\n') 
-    print ('\t- Epochs: %d\n' % net['Informations']['Epochs'])
-    print ('\t- Batch size: %d\n' % net['Informations']['Batch Size'])
-    print ('\t- Learning rate: %f\n' % net['Informations']['Learning Rate'])
-    print ('\t- CD order: %d\n' % net['Informations']['CD'])
-    print ('\t- Regularization: %f\n' % net['Informations']['L2'])
+    print ('\t- Epochs: %d\n' % netInfos['Epochs'])
+    print ('\t- Batch size: %d\n' % netInfos['Batch Size'])
+    print ('\t- Learning rate: %f\n' % netInfos['Learning Rate'])
+    print ('\t- CD order: %d\n' % netInfos['CD'])
+    print ('\t- Regularization: %f\n' % netInfos['L2'])
     print ('\n\nRBM Parameters')
     print ('\tWeights:')
-    print net['Parameters'][0].eval()
+    print netInfos['Weights'].eval()
     print '\n'
     print ('\tVisible Fields:')
-    print net['Parameters'][1].eval()
+    print netInfos['V Bias'].eval()
     print '\n'
     print ('\tHidden Fields:')
-    print net['Parameters'][2].eval()
+    print netInfos['H Bias'].eval()
     print '\n'
     print ('\tLog Partition Function:')
-    print net['Informations']['logZ']
+    print netInfos['logZ']
     print '\n'
  
 #------------------------------------------------
 
-def Format(oldNet):
+def Format(pathToOldNet,T):
+    
+    f = open(pathToOldNet)
+    old_dictionary = cPickle.load(f)
+    
+    network = Network(64,'Ising2d') 
+    
+    network.infos['Hidden Units'] = old_dictionary['Informations']['Hidden Units'] 
+    network.infos['Learning Rate'] = old_dictionary['Informations']['Learning Rate']
+    network.infos['Batch Size'] = old_dictionary['Informations']['Batch Size']
+    network.infos['Epochs'] = old_dictionary['Informations']['Epochs']
+    network.infos['CD'] = old_dictionary['Informations']['CD_order']
+    network.infos['L2'] = old_dictionary['Informations']['L2']
+    network.infos['Visible Units'] = 64
+    network.infos['logZ'] = None
+    network.infos['Model'] = 'Ising2d'
+    network.infos['Temperature'] = T 
+    network.infos['Weights'] = old_dictionary['Parameters'][0]
+    network.infos['V Bias'] = old_dictionary['Parameters'][1]
+    network.infos['H Bias'] = old_dictionary['Parameters'][2]
 
-    c = 0
+    name = build_fileName(network,'model')
+    path_out = '../data/networks/L8/'
+    path_out += name
+
+    f_out = open(path_out,'wb')
+    cPickle.dump(network.infos,f_out)
+    f_out.close()
 
 #------------------------------------------------
 
@@ -202,8 +220,18 @@ if __name__ == "__main__":
 
     if (args.command == 'print'):
         net= cPickle.load(open(args.net))
-        print_network(net.infos)
+        print type(net)
+        print_network(net)
 
     if (args.command == 'format'):
-        Format(args.network)
-
+        path = '../data/networks/Old/L8/*.pkl'
+        files = glob.glob(path)
+        counter = 0
+        for fileName in files:
+            
+            if (counter == 21):
+                counter = 0
+            
+            Format(fileName,counter)
+            counter += 1
+            

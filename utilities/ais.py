@@ -2,7 +2,7 @@ import math as m
 import numpy as np
 import theano
 import cPickle
-import network
+import network as NET
 import argparse
 
 #-------------------------------------------------
@@ -67,9 +67,9 @@ class Z(object):
         
         """ Load RBM parameters  """
 
-        self.W = net.infos['Parameters'][0].eval()
-        self.b = net.infos['Parameters'][1].eval()
-        self.c = net.infos['Parameters'][2].eval()
+        self.W = net['Weights'].eval()
+        self.b = net['V Bias'].eval()
+        self.c = net['H Bias'].eval()
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -194,42 +194,42 @@ if __name__ == "__main__":
     parser.add_argument('--T',type=int)
     parser.add_argument('--hid',type=int)
     parser.add_argument('--ep',default = 2000     ,type=int)
-    parser.add_argument('--bs',default = 50       ,type=int)
+    parser.add_argument('--bS',default = 50       ,type=int)
     parser.add_argument('--lr',default = 0.01     ,type=float)
     parser.add_argument('--CD',default = 20       ,type=int)
     parser.add_argument('--L2',default = 0.0      ,type=float)
-    parser.add_argument('--K',default = 100     ,type=float)
+    parser.add_argument('--K',default = 1000     ,type=float)
     parser.add_argument('--M',default = 10       ,type=float)
  
     args = parser.parse_args()
     
     n_v = args.L**2
 
-    Network = network.Network(n_v,
+    Network = NET.Network(n_v,
                   args.model,
                   args.hid,
                   args.ep,
-                  args.bs,
+                  args.bS,
                   args.CD,
                   args.lr,
                   args.L2,
                   args.T)
  
     pathToNetwork = '../'
-    pathToNetwork += network.build_networkPath(Network)
+    pathToNetwork += NET.build_networkPath(Network)
         
     Trained_Network = cPickle.load(open(pathToNetwork))
                 
     Network.load(Trained_Network)
 
     annealed = Z(n_v,args.hid,args.K,args.M)
-    annealed.get_parameters(Network)
+    annealed.get_parameters(Network.infos)
     annealed.get_Z()
     logZ = np.log(annealed.Z)
     
     print ('\nLog Partition Function: %f' % logZ) 
     
-    network.update_logZ(pathToNetwork,Network,logZ)
+    NET.update_logZ(pathToNetwork,Network,logZ)
 
 
 #-------------------------------------------------
