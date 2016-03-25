@@ -122,4 +122,10 @@ if __name__ == "__main__":
     exact.get_Z()
     logZ = np.log(exact.Z)
     
+    print ('\nLog Partition Function: %f' % logZ) 
+    
     network.update_logZ(pathToNetwork,Network,logZ)
+
+
+#-------------------------------------------------
+

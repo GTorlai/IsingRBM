@@ -45,9 +45,9 @@ class Network(object):
 
         param = {}
         
-        param['Weights'] = W
-        param['V Bias']  = b
-        param['H Bias']  = c
+        param[0] = W
+        param[1]  = b
+        param[2]  = c
 
         # Write network dictionary
         
@@ -60,9 +60,9 @@ class Network(object):
     
     def load(self,trained_net):
 
-        self.infos['Parameters'][0] = trained_net['Parameters'][0]
-        self.infos['Parameters'][1] = trained_net['Parameters'][1]
-        self.infos['Parameters'][2] = trained_net['Parameters'][2]
+        self.infos['Parameters'][0] = trained_net.infos['Parameters'][0]
+        self.infos['Parameters'][1] = trained_net.infos['Parameters'][1]
+        self.infos['Parameters'][2] = trained_net.infos['Parameters'][2]
  
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
