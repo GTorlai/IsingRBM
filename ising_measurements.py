@@ -79,6 +79,26 @@ class IsingMeasure(object):
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
     
+    def build_inputName(self,Network):
+        
+        name = 'data/samples/L'
+        name += str(self.L)
+        name += '/'
+        name += NET.build_fileName(Network,'visible_samples')
+        return name
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+    
+    def build_outputName(self,Network):
+        
+        name = 'data/measurements/L'
+        name += str(self.L)
+        name += '/'
+        name += NET.build_fileName(Network,'Ising_measures')
+        return name
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+    
     def print_lattice(self):
 
         """ Print NN connections """

@@ -1,17 +1,14 @@
 import Restricted_Boltzmann_Machine as RBM
 import utilities.network as NET
 import utilities.dataset as DAT
-#import RBM_stat_model as RBM_SM
+import ising_measurements
+import rbm_measurements
 import argparse
 import theano
 import theano.tensor as T
 import gzip
 import cPickle
 import numpy as np
-#import Tools
-#import AIS
-#import Exact_Z
-#import RBM_Classifier
 from pylab import loadtxt
 
 
@@ -58,8 +55,6 @@ def main():
         train_set = theano.shared(np.asarray(spins,
             dtype = theano.config.floatX), borrow = True)
         
-        #NET.print_network(Network.infos)
-        
         rbm = RBM.RBM(X,Network)
         
         rbm.Train(train_set,X)
@@ -77,6 +72,47 @@ def main():
         rbm = RBM.RBM(X,Network)
         
         rbm.sample(args.l)
+    
+    elif args.command == 'measureIsing':
+        
+        ising = ising_measurements.IsingMeasure(Network,2)
+        ising.build_lattice()
+ 
+        inputName = ising.build_inputName(Network)
+        outputName =ising.build_outputName(Network)
+
+        inputFile = open(inputName,'r')        
+        outputFile = open(outputName,'w')
+        samples = loadtxt(inputFile)
+ 
+        for k in range(len(samples)):
+            ising.get_energy(samples[k])
+            ising.get_magnetization(samples[k])
+            ising.record(outputFile)
+    
+    elif args.command == 'measureRBM':
+        
+        pathToNetwork = NET.build_networkPath(Network)
+        
+        Trained_Network = cPickle.load(open(pathToNetwork))
+                
+        Network.load(Trained_Network)
+ 
+        rbm = rbm_measurements.rbmMeasure(Network)
+ 
+        [inputName_V,inputName_H] = rbm.build_inputNames(Network)
+        outputName = rbm.build_outputName(Network)
+
+        inputFile_V = open(inputName_V,'r')
+        inputFile_H = open(inputName_H,'r') 
+        outputFile = open(outputName,'w')
+        samples_V = loadtxt(inputFile_V)
+        samples_H = loadtxt(inputFile_H)
+
+        for k in range(len(samples_V)):
+            rbm.get_energy(samples_V[k],samples_H[k])
+            rbm.get_magnetization(samples_V[k],samples_H[k])
+            rbm.record(outputFile)
 
 #    elif args.command == 'classify':
 #
