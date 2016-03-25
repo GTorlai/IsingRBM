@@ -91,7 +91,7 @@ if __name__ == "__main__":
     parser.add_argument('--T',type=int)
     parser.add_argument('--hid',type=int)
     parser.add_argument('--ep',default = 2000     ,type=int)
-    parser.add_argument('--bs',default = 50       ,type=int)
+    parser.add_argument('--bS',default = 50       ,type=int)
     parser.add_argument('--lr',default = 0.01     ,type=float)
     parser.add_argument('--CD',default = 20       ,type=int)
     parser.add_argument('--L2',default = 0.0      ,type=float)
@@ -104,7 +104,7 @@ if __name__ == "__main__":
                   args.model,
                   args.hid,
                   args.ep,
-                  args.bs,
+                  args.bS,
                   args.CD,
                   args.lr,
                   args.L2,
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     
     print ('\nLog Partition Function: %f' % logZ) 
     
-    network.update_logZ(pathToNetwork,Network,logZ)
+    #network.update_logZ(pathToNetwork,Network,logZ)
 
 
 #-------------------------------------------------

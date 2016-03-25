@@ -38,9 +38,9 @@ class RBM(object):
         self.n_h = Network['Informations']['Hidden Units']
         
         # Network Parameters
-        W = Network['Parameters']['Weights']
-        b = Network['Parameters']['V Bias']
-        c = Network['Parameters']['H Bias']
+        W = Network['Parameters'][0]
+        b = Network['Parameters'][1]
+        c = Network['Parameters'][2]
 
         # Numpy & Theano random number generators
         np_rng = np.random.RandomState(1234)
