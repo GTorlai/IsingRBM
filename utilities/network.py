@@ -2,11 +2,7 @@ import gzip
 import cPickle
 import numpy as np
 import theano
-import theano.tensor as T
-import matplotlib.pyplot as plt
-import glob
 import argparse
-from pylab import loadtxt
 
 #-------------------------------------------------
 
@@ -64,9 +60,9 @@ class Network(object):
     
     def load(self,trained_net):
 
-        self.infos['Parameters']['Weights']=trained_net['Parameters'][0]
-        self.infos['Parameters']['V Bias']=trained_net['Parameters'][1]
-        self.infos['Parameters']['H Bias']=trained_net['Parameters'][2]
+        self.infos['Parameters'][0] = trained_net['Parameters'][0]
+        self.infos['Parameters'][1] = trained_net['Parameters'][1]
+        self.infos['Parameters'][2] = trained_net['Parameters'][2]
  
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -84,9 +80,9 @@ def update_parameters(fileName,network,new_parameters):
 
     """ Update values of parameters and write on file"""
 
-    network['Parameters']['Weights'] = new_parameters[0]
-    network['Parameters']['V Bias']  = new_parameters[1]
-    network['Parameters']['H Bias']  = new_parameters[2]
+    network['Parameters'][0] = new_parameters[0]
+    network['Parameters'][1]  = new_parameters[1]
+    network['Parameters'][2]  = new_parameters[2]
 
     f = open(fileName,'w')
     cPickle.dump(network,f)
@@ -98,7 +94,7 @@ def update_logZ(fileName,network,logZ):
 
     """ Update values of parameters and write on file"""
 
-    network['Informations']['logZ'] = logZ
+    network.infos['Informations']['logZ'] = logZ
 
     f = open(fileName,'w')
     cPickle.dump(network,f)
@@ -175,13 +171,13 @@ def print_network(net):
     print ('\t- Regularization: %f\n' % net['Informations']['L2'])
     print ('\n\nRBM Parameters')
     print ('\tWeights:')
-    print net['Parameters']['Weights'].eval()
+    print net['Parameters'][0].eval()
     print '\n'
     print ('\tVisible Fields:')
-    print net['Parameters']['V Bias'].eval()
+    print net['Parameters'][1].eval()
     print '\n'
     print ('\tHidden Fields:')
-    print net['Parameters']['H Bias'].eval()
+    print net['Parameters'][2].eval()
     print '\n'
     print ('\tLog Partition Function:')
     print net['Informations']['logZ']
@@ -205,9 +201,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if (args.command == 'print'):
-        Print_network(args.network)
+        net= cPickle.load(open(args.net))
+        print_network(net.infos)
 
     if (args.command == 'format'):
         Format(args.network)
-
 
