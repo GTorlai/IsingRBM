@@ -211,7 +211,7 @@ class RBM(object):
         while (epoch < self.epochs):
 
             epoch = epoch + 1
-            print epoch         
+            
             for minibatch_index in xrange(n_train_batches):
                 
                 train_model(minibatch_index)

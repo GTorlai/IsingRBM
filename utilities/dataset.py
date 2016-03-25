@@ -42,7 +42,7 @@ def pickle_datasets():
         
     """
     
-    path = 'datasets/raw/*.txt'
+    path = '../data/datasets/temp/*.txt'
 
     files = glob.glob(path)
     Tcounter = 0
@@ -62,7 +62,7 @@ def pickle_datasets():
                 
             data = np.array(data,dtype='float32')
 
-        outputName = 'datasets/spins/L10/Ising2d_L10_spins_T'
+        outputName = '../data/datasets/train/L12/Ising2d_L12_spins_T'
         if (Tcounter < 10):
             outputName += '0'
             outputName += str(Tcounter)
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.command == 'pickle':
-        Pickle_datasets()
+        pickle_datasets()
 
     elif args.command == 'format':
         Format_Dataset_CPP(args.file)

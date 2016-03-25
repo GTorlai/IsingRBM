@@ -35,7 +35,7 @@ def main():
     args = parser.parse_args()
 
     X = T.matrix()
-    n_v = args.L**2
+    n_v = args.L*args.L
 
     Network = NET.Network(n_v,
                          args.model,
