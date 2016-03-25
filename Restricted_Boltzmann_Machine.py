@@ -4,9 +4,9 @@ import numpy as np
 import theano
 import theano.tensor as T
 from theano.tensor.shared_randomstreams import RandomStreams
-import Tools as tools
+#import Tools as tools
+import utilities.network
 import argparse
-import timeit
 import math as m
 import os
 
@@ -18,37 +18,41 @@ class RBM(object):
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    def __init__(self,input,model,n_v,n_h,SimPar,W=None,b=None,c=None):
+    def __init__(self,input,Network):
        
         """ Constructor """
 
         print ('..initializing parameters')
         
-        # Import model name
-        self.model = model
-        
+        self.Network = Network
+
         # Learning parameters
-        self.epochs = SimPar.epochs
-        self.batch_size = SimPar.batch_size
-        self.learning_rate = SimPar.lr
-        self.CD_order = SimPar.CD_order
-        self.L2_par = SimPar.L2_par
+        self.epochs        = Network['Informations']['Epochs']
+        self.batch_size    = Network['Informations']['Batch Size']
+        self.learning_rate = Network['Informations']['Learning Rate']
+        self.CD_order      = Network['Informations']['CD']
+        self.L2_par        = Network['Informations']['L2']
         
         # Number of visible and hidden unites
-        self.n_v = n_v
-        self.n_h = n_h
+        self.n_v = Network['Informations']['Visible Units']
+        self.n_h = Network['Informations']['Hidden Units']
         
+        # Network Parameters
+        W = Network['Parameters']['Weights']
+        b = Network['Parameters']['V Bias']
+        c = Network['Parameters']['H Bias']
+
         # Print stuff
-       # print ('\n*****************************\n')
-       # print ('Model: %s\n' % self.model)
-       # print ('Visible units: %d\n' % self.n_v)
-       # print ('Hidden units: %d\n\n' % self.n_h)
-       # print ('Hyper-parameters:\n') 
-       # print ('\t- Epochs: %d\n' % self.epochs)
-       # print ('\t- Batch size: %d\n' % self.batch_size)
-       # print ('\t- Learning rate: %f\n' % self.learning_rate)
-       # print ('\t- CD order: %d\n' % self.CD_order)
-       # print ('\t- Regularization magnitude: %f\n' % self.L2_par)
+        # print ('\n*****************************\n')
+        # print ('Model: %s\n' % self.model)
+        # print ('Visible units: %d\n' % self.n_v)
+        # print ('Hidden units: %d\n\n' % self.n_h)
+        # print ('Hyper-parameters:\n') 
+        # print ('\t- Epochs: %d\n' % self.epochs)
+        # print ('\t- Batch size: %d\n' % self.batch_size)
+        # print ('\t- Learning rate: %f\n' % self.learning_rate)
+        # print ('\t- CD order: %d\n' % self.CD_order)
+        # print ('\t- Regularization magnitude: %f\n' % self.L2_par)
 
         # Numpy & Theano random number generators
         np_rng = np.random.RandomState(1234)
@@ -92,7 +96,7 @@ class RBM(object):
         self.params = [self.W,self.b,self.c]
         
         # Regularization
-        self.L2 = (self.W**2).sum()
+        self.L2_reg = (self.W**2).sum()
 
         # Input of the rbm
         self.input = input
@@ -152,18 +156,6 @@ class RBM(object):
         return F
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    def cross_entropy(self,v_pre_activation):
-        
-        """ Compute cross entropy between input and reconstruction"""
-
-        cross_entropy = T.mean(T.sum(
-            self.input * T.log(T.nnet.sigmoid(v_pre_activation))+\
-            (1-self.input)*T.log(1-T.nnet.sigmoid(v_pre_activation)),axis=1))
-        
-        return cross_entropy
-    
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     def CD_k(self,k):
 
@@ -179,7 +171,7 @@ class RBM(object):
         
         # Cost function
         cost = T.mean(self.free_energy(self.input))-\
-               T.mean(self.free_energy(v_state)) + self.L2_par * self.L2
+               T.mean(self.free_energy(v_state)) + self.L2_par * self.L2_reg
 
         # Symbolic gradient
         gradient = T.grad(cost=cost,wrt=self.params,
@@ -191,58 +183,39 @@ class RBM(object):
             updates.append([par, par - T.cast(self.learning_rate,
                             dtype=theano.config.floatX) * grad])
 
-        xentropy = self.cross_entropy(v_pre_act)
-        
-        return updates, xentropy
+        return updates
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    def Train(self,train_X,X,Temp):
+    def Train(self,train_set,X):
 
         """ Train the model """
 
-        n_train_batches=train_X.get_value(borrow=True).shape[0]/self.batch_size
+        n_train_batches=train_set.get_value(borrow=True).shape[0]/self.batch_size
 
         print ('...building the model graph\n') 
         
         # Symbolic scalar for the batch index
         batch_index = T.lscalar('batch index')
 
-        updates, xentropy = self.CD_k(self.CD_order)
+        updates = self.CD_k(self.CD_order)
         
         # Train function
         train_model = theano.function(
                 inputs = [batch_index],
-                outputs = xentropy,
                 updates = updates,
                 givens = {
-                    X: train_X[batch_index * self.batch_size: 
+                    X: train_set[batch_index * self.batch_size: 
                               (batch_index + 1) * self.batch_size]
                 },
                 name = 'Train'
         )
         
         epoch = 0
-        linear_size = int(np.sqrt(self.n_v))
-
-        modelFileName = 'RBM_CD'
-        modelFileName += str(self.CD_order)
-        modelFileName += '_hid'
-        modelFileName += str(self.n_h)
-        modelFileName += '_bS'
-        modelFileName += str(self.batch_size)
-        modelFileName += '_ep'
-        modelFileName += str(self.epochs)
-        modelFileName += '_lr'
-        modelFileName += str(self.learning_rate)
-        modelFileName += '_L'
-        modelFileName += str(self.L2_par)
-        modelFileName += '_Ising2d_L'
-        modelFileName += str(linear_size)
-        modelFileName += '_T'
-        modelFileName += str(Temp)
-        modelFileNameExt = modelFileName
-        modelFileNameExt += str('_model.pkl')
+       
+        fileName = utilities.network.build_fileName(self.Network,'model')
+        
+        utilities.network.save_network(self.Network,fileName)
 
         print ('\n*****************************\n')
         print ('..training')
@@ -251,22 +224,17 @@ class RBM(object):
         while (epoch < self.epochs):
 
             epoch = epoch + 1
-            avg_xentropy = 0.0
             
             for minibatch_index in xrange(n_train_batches):
                 
                 costs = train_model(minibatch_index)
-                #avg_xentropy += costs
             
-            #avg_xentropy /= n_train_batches
+            utilities.network.update_parameters(fileName,
+                                        self.Network,
+                                        self.params)
+            print self.Network['Parameters']['H Bias'].eval()[0]
 
-            #print('Epoch %d\tXentropy =  %f' 
-            #        % (epoch,avg_xentropy))
-        
-            tools.Save_network(modelFileNameExt,self)
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
     def sample(self,network,Temp,layer):
         

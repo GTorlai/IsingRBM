@@ -1,14 +1,3 @@
 *.pyc
-datasets/*
-samples/*
-measurements/*
-*.txt
-*.dat
-*.pkl
-networks/*
+data/*
 .DS_Store
-measure
-runs
-*.sh
-plot.py
-analysis/*
