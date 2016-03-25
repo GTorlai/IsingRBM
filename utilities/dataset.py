@@ -10,7 +10,7 @@ from pylab import loadtxt
 
 #-------------------------------------------------
 
-def build_fileName(Model,Temperature,Size):
+def build_dataPath(Model,Temperature,Size):
     
     name = 'data/datasets/train/L'
     name += str(Size)

@@ -42,18 +42,6 @@ class RBM(object):
         b = Network['Parameters']['V Bias']
         c = Network['Parameters']['H Bias']
 
-        # Print stuff
-        # print ('\n*****************************\n')
-        # print ('Model: %s\n' % self.model)
-        # print ('Visible units: %d\n' % self.n_v)
-        # print ('Hidden units: %d\n\n' % self.n_h)
-        # print ('Hyper-parameters:\n') 
-        # print ('\t- Epochs: %d\n' % self.epochs)
-        # print ('\t- Batch size: %d\n' % self.batch_size)
-        # print ('\t- Learning rate: %f\n' % self.learning_rate)
-        # print ('\t- CD order: %d\n' % self.CD_order)
-        # print ('\t- Regularization magnitude: %f\n' % self.L2_par)
-
         # Numpy & Theano random number generators
         np_rng = np.random.RandomState(1234)
         self.theano_rng = RandomStreams(2**17)
@@ -220,7 +208,7 @@ class RBM(object):
         print ('\n*****************************\n')
         print ('..training')
         
-        # Actual training
+        # Training
         while (epoch < self.epochs):
 
             epoch = epoch + 1
@@ -232,11 +220,10 @@ class RBM(object):
             utilities.network.update_parameters(fileName,
                                         self.Network,
                                         self.params)
-            print self.Network['Parameters']['H Bias'].eval()[0]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
-    def sample(self,network,Temp,layer):
+    def sample(self,layer):
         
         """ Sample visible units from the rbm """
         
@@ -244,34 +231,13 @@ class RBM(object):
         n_measure = 100000
         record_frequency = 10
 
-        linear_size = int(np.sqrt(self.n_v))
+        V_fileName = utilities.network.build_fileName(self.Network,'visible_samples')
+        H_fileName = utilities.network.build_fileName(self.Network,'hidden_samples')
 
-        modelFileName = 'RBM_CD'
-        modelFileName += str(network['Informations']['CD_order'])
-        modelFileName += '_hid'
-        modelFileName += str(self.n_h)
-        modelFileName += '_bS'
-        modelFileName += str(network['Informations']['Batch Size'])
-        modelFileName += '_ep'
-        modelFileName += str(network['Informations']['Epochs'])
-        modelFileName += '_lr'
-        modelFileName += str(network['Informations']['Learning Rate'])
-        modelFileName += '_L'
-        modelFileName += str(network['Informations']['L2'])
-        modelFileName += '_Ising2d_L'
-        modelFileName += str(linear_size)
-        modelFileName += '_T'
-        modelFileName += str(Temp)
-
-        outVisName = modelFileName
-        outHidName = modelFileName
-        outVisName += str('_visible_samples.txt')
-        outHidName += str('_hidden_samples.txt')
-
-        outputVisible = open(outVisName,'w')
+        outputVisible = open(V_fileName,'w')
                 
         if (layer == 'full'):
-            outputHidden  = open(outHidName,'w')
+            outputHidden  = open(H_fileName,'w')
 
         spin0 = np.zeros((self.n_v),dtype = theano.config.floatX)
         hidden0 = np.zeros((self.n_h),dtype = theano.config.floatX)
@@ -319,4 +285,3 @@ class RBM(object):
         if (layer == 'full'):
             outputHidden.close()
  
-        

@@ -60,8 +60,14 @@ class Network(object):
         self.infos['Parameters']   = param
         self.infos['Informations'] = info
         
-        # File Name
-        
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    def load(self,trained_net):
+
+        self.infos['Parameters']['Weights']=trained_net['Parameters'][0]
+        self.infos['Parameters']['V Bias']=trained_net['Parameters'][1]
+        self.infos['Parameters']['H Bias']=trained_net['Parameters'][2]
+ 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def save_network(network,fileName):
@@ -118,6 +124,8 @@ def build_fileName(network,extension):
     name += str(network['Informations']['L2'])
     name += '_'
     name += network['Informations']['Model']
+    name += '_L'
+    name += str(int(np.sqrt(network['Informations']['Visible Units'])))
     name += '_T'
     if (network['Informations']['Temperature']<10):
         name += '0'
@@ -131,6 +139,16 @@ def build_fileName(network,extension):
     else:
         name += '.txt'
 
+    return name
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def build_networkPath(network):
+
+    name = 'data/networks/L'
+    name += str(int(np.sqrt(network.infos['Informations']['Visible Units'])))
+    name += '/'
+    name += build_fileName(network.infos,'model')
+    
     return name
 
 #------------------------------------------------
@@ -157,13 +175,13 @@ def print_network(net):
     print ('\t- Regularization: %f\n' % net['Informations']['L2'])
     print ('\n\nRBM Parameters')
     print ('\tWeights:')
-    print net['Parameters']['Weights']
+    print net['Parameters']['Weights'].eval()
     print '\n'
     print ('\tVisible Fields:')
-    print net['Parameters']['V Bias']
+    print net['Parameters']['V Bias'].eval()
     print '\n'
     print ('\tHidden Fields:')
-    print net['Parameters']['H Bias']
+    print net['Parameters']['H Bias'].eval()
     print '\n'
     print ('\tLog Partition Function:')
     print net['Informations']['logZ']
