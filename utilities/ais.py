@@ -55,6 +55,7 @@ class Z(object):
         
         for i in range(self.K/2):
             self.beta.append(0.9+0.1*i/(self.K/2))
+        
         self.beta.append(1.)
  
         #for i in range(self.K):
@@ -199,7 +200,7 @@ if __name__ == "__main__":
     parser.add_argument('--CD',default = 20       ,type=int)
     parser.add_argument('--L2',default = 0.0      ,type=float)
     parser.add_argument('--K',default = 1000     ,type=float)
-    parser.add_argument('--M',default = 10       ,type=float)
+    parser.add_argument('--M',default = 100       ,type=float)
  
     args = parser.parse_args()
     
@@ -227,7 +228,7 @@ if __name__ == "__main__":
     annealed.get_Z()
     logZ = np.log(annealed.Z)
     
-    print ('\nLog Partition Function: %f' % logZ) 
+    #print ('\nLog Partition Function: %f' % logZ) 
     
     NET.update_logZ(pathToNetwork,Network,logZ)
 

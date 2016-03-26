@@ -141,7 +141,7 @@ if __name__ == "__main__":
     ising = IsingMeasure(Network,2)
     ising.build_lattice()
  
-    inputName = 'data/samples/L'
+    inputName = 'data/samples/Lprova'
     inputName += str(args.L)
     inputName += '/'
     inputName += NET.build_fileName(Network,'visible_samples')
