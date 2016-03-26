@@ -124,6 +124,6 @@ if __name__ == "__main__":
     
     print ('\nLog Partition Function: %f' % logZ) 
     
-    NET.update_logZ(pathToNetwork,Network,logZ)
+    NET.update_logZ(pathToNetwork,Network,logZ,0,0,0)
 
 #-------------------------------------------------

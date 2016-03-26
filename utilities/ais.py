@@ -152,7 +152,7 @@ class Z(object):
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    def get_Z(self):
+    def get_Z(self,outputFile):
         
         """ Compute Partition Function"""
 
@@ -161,24 +161,14 @@ class Z(object):
             self.BaseRate_sampler()
             #self.w.append(self.sweep())
             meas = self.sweep() 
-            self.w.append(meas)
+            #self.w.append(meas)
             measure = m.log(self.Z_BR*meas)
+            outputFile.write('%.5f\n', % measure)
 
-        r = np.mean(self.w)
+        #r = np.mean(self.w)
         
-        self.Z = self.Z_BR * r
-       
-        #delta_r = 0.0
-        #
-        #for i in range(self.M):
-        #    delta_r += (1.0*self.w[i]-r)**2
-        #
-        #d_r = m.sqrt(delta_r/(self.M*(self.M-1)))
-        #
-        #self.dZ = self.Z_BR * d_r
-        #print self.Z
-        #print self.dZ
-
+        #self.Z = self.Z_BR * r
+    
 #-------------------------------------------------
 
 def sigmoid(x):
@@ -222,15 +212,22 @@ if __name__ == "__main__":
     Trained_Network = cPickle.load(open(pathToNetwork))
                 
     Network.load(Trained_Network)
+    
+    outputName = '../data/measurements/L'
+    outputName += str(args.L)
+    outputName += '/'
+    outputName += NET.build_fileName(Network,'logZ')
+
+    outputFile = open(outputName, 'w')
 
     annealed = Z(n_v,args.hid,args.K,args.M)
     annealed.get_parameters(Network.infos)
-    annealed.get_Z()
-    logZ = np.log(annealed.Z)
-    
+    annealed.get_Z(outputFile)
+
+    #logZ = np.log(annealed.Z)
+
     #print ('\nLog Partition Function: %f' % logZ) 
     
-    NET.update_logZ(pathToNetwork,Network,logZ)
-
+    #NET.update_logZ(pathToNetwork,Network,logZ,args.K,args.M)
 
 #-------------------------------------------------

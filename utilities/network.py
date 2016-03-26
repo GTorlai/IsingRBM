@@ -21,9 +21,7 @@ class Network(object):
                        CD = None,
                        learning_rate = None,
                        L2 = None,
-                       T_index = None,
-                       W = None, b = None, c = None,
-                       logZ = None):
+                       T_index = None):
         
         """ Constructor """
         
@@ -40,21 +38,30 @@ class Network(object):
         self.infos['Epochs']        = epochs
         self.infos['CD']            = CD
         self.infos['L2']            = L2
-        self.infos['logZ']          = logZ
         
-        # Write parameters dictionary
+        # Initialize empty physical parameters
 
-        self.infos['Weights'] = W
-        self.infos['V Bias']  = b
-        self.infos['H Bias']  = c
+        self.infos['Weights']  = None
+        self.infos['V Bias']   = None
+        self.infos['H Bias']   = None
+        self.infos['logZ']     = None
+        self.infos['d_logZ']   = None
+        self.infos['AIS beta'] = None
+        self.infos['AIS runs'] = None
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     def load(self,trained_net):
 
-        self.infos['Weights'] = trained_net['Weights']
-        self.infos['V Bias'] = trained_net['V Bias']
-        self.infos['H Bias'] = trained_net['H Bias']
+        """ Load physics parameters from trained network"""
+
+        self.infos['Weights']  = trained_net['Weights']
+        self.infos['V Bias']   = trained_net['V Bias']
+        self.infos['H Bias']   = trained_net['H Bias']
+        self.infos['logZ']     = trained_net['logZ']
+        self.infos['d_logZ']   = trained_net['d_logZ']
+        self.infos['AIS beta'] = trained_net['AIS beta']
+        self.infos['AIS runs'] = trained_net['AIS runs']
  
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -82,14 +89,36 @@ def update_parameters(fileName,network,new_parameters):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def update_logZ(fileName,network,logZ):
+def update_logZ(fileName,network,logZ,beta,runs):
 
     """ Update values of parameters and write on file"""
 
-    network.infos['logZ'] = logZ
-
+    network.infos['logZ']     = logZ
+    network.infos['AIS beta'] = beta
+    network.infos['AIS runs'] = runs
+    
+    if runs == 0:
+        network.infos['d_logZ'] = 0
+    
     f = open(fileName,'wb')
     cPickle.dump(network.infos,f)
+    f.close()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def add_fields(fileName):
+
+    """ Update values of parameters and write on file"""
+
+    f = open(fileName,'rb')
+    infos = cPickle.load(f)
+    
+    # ADD FIELD HERE
+
+    f.close()
+    
+    f = open(fileName,'wb')
+    cPickle.dump(infos,f)
     f.close()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,6 +191,7 @@ def print_network(netInfos):
     print ('\t- Learning rate: %f\n' % netInfos['Learning Rate'])
     print ('\t- CD order: %d\n' % netInfos['CD'])
     print ('\t- Regularization: %f\n' % netInfos['L2'])
+    
     print ('\n\nRBM Parameters')
     print ('\tWeights:')
     print netInfos['Weights'].eval()
@@ -171,10 +201,14 @@ def print_network(netInfos):
     print '\n'
     print ('\tHidden Fields:')
     print netInfos['H Bias'].eval()
-    print '\n'
-    print ('\tLog Partition Function:')
-    print netInfos['logZ']
-    print '\n'
+    
+    if netInfos['logZ'] is not None:
+        print '\n\nPartition Function'
+        print ('\tLog Partition Function: %f' % netInfot['logZ'])
+        if netInfos['d_logZ'] is not None:
+            print ('\t- Error: %d\n' % netInfos['d_logZ'])
+        print ('\t- AIS beta: %d\n' % netInfos['AIS beta'])
+        print ('\t- AIS runs: %d\n' % netInfos['AIS runs'])
  
 #------------------------------------------------
 
@@ -193,6 +227,9 @@ def Format(pathToOldNet,T):
     network.infos['L2'] = old_dictionary['Informations']['L2']
     network.infos['Visible Units'] = 100
     network.infos['logZ'] = None
+    network.infos['d_logZ']   = None
+    network.infos['AIS beta'] = None
+    network.infos['AIS runs'] = None
     network.infos['Model'] = 'Ising2d'
     network.infos['Temperature'] = T 
     network.infos['Weights'] = old_dictionary['Parameters'][0]
@@ -222,7 +259,14 @@ if __name__ == "__main__":
         net= cPickle.load(open(args.net))
         print type(net)
         print_network(net)
-
+    
+    if (args.command == 'add'):
+        path = '../data/networks/L10/*.pkl'
+        files = glob.glob(path)
+        counter = 0
+        for fileName in files:
+            add_fields(fileName)
+     
     if (args.command == 'format'):
         path = '../data/networks/Old/L10/*.pkl'
         files = glob.glob(path)
