@@ -2,6 +2,7 @@ import Restricted_Boltzmann_Machine as RBM
 import utilities.network as NET
 import utilities.dataset as DAT
 import utilities.statistics as STAT
+import rbm_classifier 
 import ising_measurements
 import rbm_measurements
 import argparse
@@ -32,6 +33,7 @@ def main():
 
     X = T.matrix()
     n_v = args.L*args.L
+    n_machines = 21
 
     Network = NET.Network(n_v,
                          args.model,
@@ -45,7 +47,7 @@ def main():
  
     if args.command == 'train' :
         
-        pathToDataset = DAT.build_dataPath(args.model,args.T,args.L)
+        pathToDataset = DAT.build_TrainPath(args.model,args.T,args.L)
 
         f = gzip.open(pathToDataset,'rb')
         spins = cPickle.load(f)
@@ -99,7 +101,7 @@ def main():
         print ('Analyzing temperature %d\n' % args.T)
 
         inputName  = STAT.build_inputName(Network,args.targ)
-        outputName = STAT.build_outputName(Network)
+        outputName = STAT.build_outputName(Network,args.targ)
         
         inputFile  = open(inputName, 'r')
         outputFile = open(outputName,'w')
@@ -118,7 +120,32 @@ def main():
 
         if args.targ == 'logZ':
             pathToNetwork = NET.build_networkPath(Network)
-            NET.update_logZ(pathToNetwork,avg,err,1000,100)
+            Trained_Network = cPickle.load(open(pathToNetwork))  
+            NET.update_logZ(pathToNetwork,Trained_Network,avg,err,1000,100)
+
+    elif args.command == 'classify':
+        
+        outputName = rbm_classifier.build_outputName(Network.infos) 
+        outputFile = open(outputName, 'w')
+
+        pathToTestSet = DAT.build_TestPath(args.L)
+        
+        NLP_matrix = np.zeros((n_machines,210000))
+
+        for k in range(n_machines):
+            
+            print ('Computing machine # %d' % k) 
+            
+            pathToNetwork = rbm_classifier.build_networkName(Network.infos,k)
+            Trained_Network = cPickle.load(open(pathToNetwork))
+            
+            CRBM = rbm_classifier.ClassRBM(Trained_Network)
+            
+            NLP_matrix[k] = CRBM.get_NLP(pathToTestSet)
+        
+        
+        CRBM.Test(NLP_matrix,outputFile)
+
 
 #    elif args.command == 'measureIsing':
 #        

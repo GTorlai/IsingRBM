@@ -93,16 +93,16 @@ def update_logZ(fileName,network,logZ,dlogZ,beta,runs):
 
     """ Update values of parameters and write on file"""
 
-    network.infos['logZ']     = logZ
-    network.infos['d_logZ']   = dlogZ
-    network.infos['AIS beta'] = beta
-    network.infos['AIS runs'] = runs
+    network['logZ']     = logZ
+    network['d_logZ']   = dlogZ
+    network['AIS beta'] = beta
+    network['AIS runs'] = runs
     
     if runs == 0:
-        network.infos['d_logZ'] = 0
+        network['d_logZ'] = 0
     
     f = open(fileName,'wb')
-    cPickle.dump(network.infos,f)
+    cPickle.dump(network,f)
     f.close()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -193,21 +193,21 @@ def print_network(netInfos):
     print ('\t- CD order: %d\n' % netInfos['CD'])
     print ('\t- Regularization: %f\n' % netInfos['L2'])
     
-    print ('\n\nRBM Parameters')
-    print ('\tWeights:')
+    print ('\n\nRBM Parameters\n\n')
+    print ('\tWeights:\n')
     print netInfos['Weights'].eval()
     print '\n'
-    print ('\tVisible Fields:')
+    print ('\tVisible Fields:\n')
     print netInfos['V Bias'].eval()
     print '\n'
-    print ('\tHidden Fields:')
+    print ('\tHidden Fields:\n')
     print netInfos['H Bias'].eval()
     
     if netInfos['logZ'] is not None:
-        print '\n\nPartition Function'
-        print ('\tLog Partition Function: %f' % netInfot['logZ'])
+        print '\n\nPartition Function\n\n'
+        print ('\tLog Partition Function: %f\n' % netInfos['logZ'])
         if netInfos['d_logZ'] is not None:
-            print ('\t- Error: %d\n' % netInfos['d_logZ'])
+            print ('\t- Error: %f\n' % netInfos['d_logZ'])
         print ('\t- AIS beta: %d\n' % netInfos['AIS beta'])
         print ('\t- AIS runs: %d\n' % netInfos['AIS runs'])
  
@@ -218,7 +218,7 @@ def Format(pathToOldNet,T):
     f = open(pathToOldNet)
     old_dictionary = cPickle.load(f)
     
-    network = Network(36,'Ising2d') 
+    network = Network(100,'Ising2d') 
     
     network.infos['Hidden Units'] = old_dictionary['Informations']['Hidden Units'] 
     network.infos['Learning Rate'] = old_dictionary['Informations']['Learning Rate']
@@ -226,7 +226,7 @@ def Format(pathToOldNet,T):
     network.infos['Epochs'] = old_dictionary['Informations']['Epochs']
     network.infos['CD'] = old_dictionary['Informations']['CD_order']
     network.infos['L2'] = old_dictionary['Informations']['L2']
-    network.infos['Visible Units'] = 36
+    network.infos['Visible Units'] = 100
     network.infos['logZ'] = None
     network.infos['d_logZ']   = None
     network.infos['AIS beta'] = None
@@ -238,7 +238,7 @@ def Format(pathToOldNet,T):
     network.infos['H Bias'] = old_dictionary['Parameters'][2]
 
     name = build_fileName(network,'model')
-    path_out = '../data/networks/L6/'
+    path_out = '../data/networks/L10/'
     path_out += name
 
     f_out = open(path_out,'wb')

@@ -10,7 +10,7 @@ from pylab import loadtxt
 
 #-------------------------------------------------
 
-def build_dataPath(Model,Temperature,Size):
+def build_TrainPath(Model,Temperature,Size):
     
     name = 'data/datasets/train/L'
     name += str(Size)
@@ -27,6 +27,16 @@ def build_dataPath(Model,Temperature,Size):
     name += '.pkl.gz'
     
     return name
+
+#-------------------------------------------------
+
+def build_TestPath(L):
+
+    path  = 'data/datasets/test/Ising2d_L'
+    path += str(L) 
+    path += '_Test.txt'
+    
+    return path
 
 #-------------------------------------------------
 

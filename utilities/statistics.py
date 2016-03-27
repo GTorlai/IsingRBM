@@ -26,14 +26,19 @@ def get_average(data):
     """ Compute averages of data """
     
     n_meas = len(data)
-    n_obs  = len(data[0])
     
-    avg = np.zeros((n_obs))
-    
-    for i in range(n_meas):
-        for j in range(n_obs):
-            avg[j] += data[i,j]
-    
+    if len(data.shape) != 1:
+        n_obs  = len(data[0])
+        avg = np.zeros((n_obs))
+        for i in range(n_meas):
+            for j in range(n_obs):
+                avg[j] += data[i,j]
+ 
+    else:
+        avg = 0.0
+        for i in range(n_meas):
+            avg += data[i]
+        
     avg /= 1.0*n_meas
     return avg
 
@@ -46,7 +51,7 @@ def binning_error(data):
     B = data[:]     # copy the dataset
 
     # Determine  number of binning levels
-    min_bin = 50    # minimum bin size
+    min_bin = 25    # minimum bin size
     if B.shape[0]<min_bin: Nl = 1 
     else:                  Nl = int(m.floor(m.log(B.shape[0]/min_bin,2))+1)
     
@@ -86,10 +91,9 @@ def logPartitionFunction(data):
 
     """ Compute mean and error of partition function"""
 
-    avg = get_average(data)
+    average = get_average(data)
     Bin = binning_error(data)
-    average = avg[0]
-    error = np.amax(Bin[j])
+    error = np.amax(Bin)
 
     return [average,error]
 
