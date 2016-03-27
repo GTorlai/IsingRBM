@@ -82,7 +82,20 @@ def binning_error(data):
 
 #-------------------------------------------------
 
-def observables(obs,data,N,T):
+def logPartitionFunction(data):
+
+    """ Compute mean and error of partition function"""
+
+    avg = get_average(data)
+    Bin = binning_error(data)
+    average = avg[0]
+    error = np.amax(Bin[j])
+
+    return [average,error]
+
+#-------------------------------------------------
+
+def observables(data,obs,N,T):
 
     """ Compute mean and error of observables """
 
@@ -113,6 +126,22 @@ def observables(obs,data,N,T):
 
 #-------------------------------------------------
 
+def analyze(target,data,obs,N,T):
+
+    """ Analyze measurements """
+
+    if target == 'Ising_measures':
+
+        [avg,err] = observables(data,obs,N,T)
+
+    if target == 'logZ':
+
+        [avg,err] = logPartitionFunction(data)
+
+    return [avg,err]
+
+#-------------------------------------------------
+
 def print_output(avg,err):
     
     print ('Energy         : %.5f +- %f\n' % (avg['E'],err['E']))
@@ -122,24 +151,28 @@ def print_output(avg,err):
 
 #-------------------------------------------------
 
-def write_output(outputFile,avg,err,T):
-    
-    outputFile.write('%.3f  ' % T)
-    outputFile.write('%.5f  ' % avg['E']) 
-    outputFile.write('%.5f  ' % avg['M']) 
-    outputFile.write('%.5f  ' % avg['C']) 
-    outputFile.write('%.5f  ' % avg['S']) 
+def write_output(outputFile,target,avg,err,T):
+   
+    if target == 'Ising_measures':
 
-    outputFile.write('%f  ' % err['E']) 
-    outputFile.write('%f  ' % err['M']) 
-    outputFile.write('%f  ' % err['C']) 
-    outputFile.write('%f  ' % err['S']) 
-    #for observable in avg:
-    #    outputFile.write('%.5f  ' % avg[observable])
+        outputFile.write('%.3f  ' % T)
+        outputFile.write('%.5f  ' % avg['E']) 
+        outputFile.write('%.5f  ' % avg['M']) 
+        outputFile.write('%.5f  ' % avg['C']) 
+        outputFile.write('%.5f  ' % avg['S']) 
+
+        outputFile.write('%f  ' % err['E']) 
+        outputFile.write('%f  ' % err['M']) 
+        outputFile.write('%f  ' % err['C']) 
+        outputFile.write('%f  ' % err['S']) 
+   
+    if target == 'logZ':
+        
+        outputFile.write('%.3f  ' % T)
+        outputFile.write('%.5f  ' % avg)
     
-    #for observable in err:
-    #    outputFile.write('%.5f  ' % err[observable])
-    
+        outputFile.write('%.5f  ' % err)
+ 
     outputFile.write('\n')
 
 #-------------------------------------------------
@@ -179,7 +212,7 @@ def load_temperature(T_index):
  
 #-------------------------------------------------
 
-def build_outputName(Network):
+def build_outputName(Network,target):
 
     outputName = 'data/observables/temp/'
     outputName += NET.build_fileName(Network,'observables')
@@ -244,5 +277,4 @@ if __name__ == "__main__":
     [avg,err] = observables(obs,data,n_v,T)
      
     write_output(outputFile,avg,err,T)    
-
 

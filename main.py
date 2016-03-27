@@ -12,7 +12,6 @@ import cPickle
 import numpy as np
 from pylab import loadtxt
 
-
 def main():
     
     parser = argparse.ArgumentParser()
@@ -71,24 +70,6 @@ def main():
         
         rbm.sample(args.l)
     
-    elif args.command == 'measureIsing':
-        
-        ising = ising_measurements.IsingMeasure(Network,2)
-        ising.build_lattice()
- 
-        inputName = ising.build_inputName(Network)
-        outputName =ising.build_outputName(Network)
-
-        inputFile = open(inputName,'r')        
-        outputFile = open(outputName,'w')
-        samples = loadtxt(inputFile)
-        
-        outputFile.write('#  E  E2  M  M2\n')
-        for k in range(len(samples)):
-            ising.get_energy(samples[k])
-            ising.get_magnetization(samples[k])
-            ising.record(outputFile)
-    
     elif args.command == 'measureRBM':
         
         pathToNetwork = NET.build_networkPath(Network)
@@ -118,7 +99,7 @@ def main():
         print ('Analyzing temperature %d\n' % args.T)
 
         inputName  = STAT.build_inputName(Network,args.targ)
-        outputName =STAT.build_outputName(Network)
+        outputName = STAT.build_outputName(Network)
         
         inputFile  = open(inputName, 'r')
         outputFile = open(outputName,'w')
@@ -129,11 +110,35 @@ def main():
         temperature = STAT.load_temperature(args.T)
         
         [obs,data] = STAT.load_data(inputFile)
+       
+        [avg,err] = STAT.analyze(args.targ,data,obs,n_v,temperature)
         
-        [avg,err]  = STAT.observables(obs,data,n_v,temperature)
-        
-        STAT.write_output(outputFile,avg,err,temperature)
+        if args.targ == 'Ising_measures':
+            STAT.write_output(outputFile,avg,err,temperature)
 
+        if args.targ == 'logZ':
+            pathToNetwork = NET.build_networkPath(Network)
+            NET.update_logZ(pathToNetwork,avg,err,1000,100)
+
+#    elif args.command == 'measureIsing':
+#        
+#        ising = ising_measurements.IsingMeasure(Network,2)
+#        ising.build_lattice()
+# 
+#        inputName = ising.build_inputName(Network)
+#        outputName =ising.build_outputName(Network)
+#
+#        inputFile = open(inputName,'r')        
+#        outputFile = open(outputName,'w')
+#        samples = loadtxt(inputFile)
+#        
+#        outputFile.write('#  E  E2  M  M2\n')
+#        for k in range(len(samples)):
+#            ising.get_energy(samples[k])
+#            ising.get_magnetization(samples[k])
+#            ising.record(outputFile)
+#    
+#
 #    elif args.command == 'classify':
 #
 #        pathToNetwork = 'networks/'
@@ -164,108 +169,7 @@ def main():
 #        ClassRBM.Test(pathToTestSet,temperatureIndex,args.sw)
 #
 #
-#    elif args.command == 'partitionFunction':
-#
-#        pathToNetwork = 'networks/'
-#        pathToNetwork += args.net
-#        
-#        Network = cPickle.load(open(pathToNetwork))
-#        
-#        n_h = Network['Informations']['Hidden Units']
-#        
-#        parameters = [Network['Parameters'][0],
-#                      Network['Parameters'][1],
-#                      Network['Parameters'][2]]
-#
-#        exact = Exact_Z.Z(n_v,n_h)
-#        exact.get_parameters(parameters)
-#        exact.getZ()
-#        exact.outputLogZ(Network,temperatureIndex)
-#        print ("Exact Partition Funcion: %f\n" % np.log(exact.Z))
-#        
-#        print 'Annealing..'
-#        #annealed = AIS.AnnealedImportanceSampling(n_v,n_h,args.k,args.sw)
-#        #annealed.get_parameters(parameters)
-#        #annealed.getZ()
-#        #annealed.outputLogZ(Network,temperatureIndex)
-#        #print ("AIS Partition Funcion: %f\n" % np.log(annealed.Z))        
-#
-#    elif args.command == 'measure':
-#        
-#        print "Initializing model..."
-#        print "\n"
-#        
-#        pathToNetwork = 'networks/'
-#        pathToNetwork += args.net
-#        
-#        Network = cPickle.load(open(pathToNetwork))
-#        
-#        n_h = Network['Informations']['Hidden Units']
-#        
-#        tempFile = open("datasets/temperatures/Ising2d_Temps.txt",'r')
-#        temps = loadtxt(tempFile)
-#        
-#        linear_size = int(np.sqrt(n_v))
-#
-#        modelName = 'RBM_CD'
-#        modelName += str(Network['Informations']['CD_order'])
-#        modelName += '_hid'
-#        modelName += str(n_h)
-#        modelName += '_bS'
-#        modelName += str(Network['Informations']['Batch Size'])
-#        modelName += '_ep'
-#        modelName += str(Network['Informations']['Epochs'])
-#        modelName += '_lr0.01_L0.0'
-#        modelName += '_Ising2d_L'
-#        modelName += str(linear_size)
-#        
-#        
-#        pathToSamples = 'samples/'
-#        pathToSamples += modelName
-#        pathToSamples += '_T'
-#        pathToSamples += str(temperatureIndex) 
-#        pathToSamples += str('_full_samples.txt')
-#        
-#        pathToOutput = 'measurements/raw/'
-#        pathToOutput += modelName
-#        pathToOutput += '_T'
-#
-#        if (int(temperatureIndex) < 10):
-#            pathToOutput += str(0)
-#        pathToOutput += str(temperatureIndex) 
-#        pathToOutput += str('_measure.txt')
-#
-#        StatRBM = RBM_SM.Stat_model(n_v,n_h,temps[int(temperatureIndex)],SimPar,
-#                             Network['Parameters'][0],
-#                             Network['Parameters'][1],
-#                             Network['Parameters'][2]
-#                             )
-#
-#       
-#        spins = []
-#        spins_samples = open(pathToSamples,'r')
-#        
-#        print "Sampling..."
-#        
-#        for configurations in spins_samples:
-#            configuration = configurations.split()
-#            spin_list = [(2*int(i)-1) for i in configuration]
-#            spins.append(spin_list)
-#
-#        spins = np.array(spins)
-#
-#        for i in range(StatRBM.MCS):
-#            [v,h] = StatRBM.setSpins(spins[i])
-#            
-#            StatRBM.energy(v,h)
-#            StatRBM.magnetization(v,h)
-#            StatRBM.record()
-#        
-#        print "...Done"
-#        print '\n\n'
-#
-#        StatRBM.measure()
-#        StatRBM.output(pathToOutput)
+
 
 if __name__ == "__main__":
     main()

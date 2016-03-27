@@ -89,11 +89,12 @@ def update_parameters(fileName,network,new_parameters):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def update_logZ(fileName,network,logZ,beta,runs):
+def update_logZ(fileName,network,logZ,dlogZ,beta,runs):
 
     """ Update values of parameters and write on file"""
 
     network.infos['logZ']     = logZ
+    network.infos['d_logZ']   = dlogZ
     network.infos['AIS beta'] = beta
     network.infos['AIS runs'] = runs
     

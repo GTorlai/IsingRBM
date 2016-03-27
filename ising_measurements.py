@@ -42,12 +42,12 @@ class IsingMeasure(object):
 
         """ Compute the energy """
 
-        self.e = 0.0
+        self.e = 0
         for i in range(self.N):
             for j in range(2*self.D):
                 self.e += -(2*spins[i]-1)*(2*spins[self.Neighbors[i,j]]-1)
 
-        self.e /= 2.0
+        self.e /= 2
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
     
@@ -55,10 +55,10 @@ class IsingMeasure(object):
 
         """ Compute the magnetization """
 
-        self.m = 0.0
+        self.m = 0
         
         for i in range(self.N):
-            self.m += 2.0*spins[i]-1.0
+            self.m += 2*spins[i]-1
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
     
@@ -71,10 +71,10 @@ class IsingMeasure(object):
         M  = abs(self.m)
         M2 = self.m * self.m
         
-        outputFile.write('%f  ' % E)
-        outputFile.write('%f  ' % E2)
-        outputFile.write('%f  ' % M)
-        outputFile.write('%f  ' % M2)
+        outputFile.write('%d  ' % E)
+        outputFile.write('%d  ' % E2)
+        outputFile.write('%d  ' % M)
+        outputFile.write('%d  ' % M2)
         outputFile.write('\n')
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 

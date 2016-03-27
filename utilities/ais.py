@@ -216,7 +216,7 @@ if __name__ == "__main__":
                 
     Network.load(Trained_Network)
     
-    outputName = '../data/measurements/L'
+    outputName  = '../data/measurements/L'
     outputName += str(args.L)
     outputName += '/'
     outputName += NET.build_fileName(Network,'logZ')
