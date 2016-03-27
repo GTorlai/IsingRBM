@@ -179,19 +179,21 @@ def sigmoid(x):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('--model',help='Name of the model',default='Ising2d')
+    parser.add_argument('--L', help='Linear size of the model',type=int)
+    parser.add_argument('--D', help='Model dimension', default=2,type=int)
+    parser.add_argument('--T', help='Temperature Index', type=int)
+    parser.add_argument('--hid',help='Number of hidden units', type=int)
+    parser.add_argument('--ep', help='Epochs', default = 2000,type=int)
+    parser.add_argument('--bs', help='Batch Size', default = 50 ,type=int)
+    parser.add_argument('--lr', help='Learning Rate', default = 0.01,type=float)
+    parser.add_argument('--CD', help='Contrastive Divergence', default = 20,type=int)
+    parser.add_argument('--L2', help='Regularization', default = 0.0 ,type=float)
+    parser.add_argument('--l', help='Binning Level', type=str)
+    parser.add_argument('--targ', help='Data',  type=str)
+    parser.add_argument('--beta', help='Beta parameter', default = 1000     ,type=float)
+    parser.add_argument('--runs', help='Number of sweeps', default = 100       ,type=float)
 
-    parser.add_argument('--model',default='Ising2d',type=str)
-    parser.add_argument('--L',type=int)
-    parser.add_argument('--T',type=int)
-    parser.add_argument('--hid',type=int)
-    parser.add_argument('--ep',default = 2000     ,type=int)
-    parser.add_argument('--bS',default = 50       ,type=int)
-    parser.add_argument('--lr',default = 0.01     ,type=float)
-    parser.add_argument('--CD',default = 20       ,type=int)
-    parser.add_argument('--L2',default = 0.0      ,type=float)
-    parser.add_argument('--K',default = 1000     ,type=float)
-    parser.add_argument('--M',default = 100       ,type=float)
- 
     args = parser.parse_args()
     
     n_v = args.L**2
@@ -219,15 +221,14 @@ if __name__ == "__main__":
     outputName += NET.build_fileName(Network,'logZ')
 
     outputFile = open(outputName, 'w')
+    outputFile.write('# logZ \n')
 
-    annealed = Z(n_v,args.hid,args.K,args.M)
+    annealed = Z(n_v,args.hid,args.beta,args.runs)
     annealed.get_parameters(Network.infos)
     annealed.get_Z(outputFile)
 
     #logZ = np.log(annealed.Z)
-
     #print ('\nLog Partition Function: %f' % logZ) 
-    
     #NET.update_logZ(pathToNetwork,Network,logZ,args.K,args.M)
 
 #-------------------------------------------------

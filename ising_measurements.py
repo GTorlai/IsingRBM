@@ -71,10 +71,10 @@ class IsingMeasure(object):
         M  = abs(self.m)
         M2 = self.m * self.m
         
-        outputFile.write('%.5f  ' % E)
-        outputFile.write('%.5f  ' % E2)
-        outputFile.write('%.5f  ' % M)
-        outputFile.write('%.5f  ' % M2)
+        outputFile.write('%f  ' % E)
+        outputFile.write('%f  ' % E2)
+        outputFile.write('%f  ' % M)
+        outputFile.write('%f  ' % M2)
         outputFile.write('\n')
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
@@ -156,6 +156,8 @@ if __name__ == "__main__":
     
     outputFile = open(outputName,'w')
     
+    outputFile.write('#  E  E2  M  M2\n')
+
     for k in range(len(samples)):
         ising.get_energy(samples[k])
         ising.get_magnetization(samples[k])

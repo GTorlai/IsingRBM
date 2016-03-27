@@ -1,7 +1,7 @@
 #/bin/sh
 
 #Number of Hidden Units
-nH=24
+nH=2
 
 #Temperature Index
 t=0
@@ -15,7 +15,7 @@ CD=20
 #Epochs
 ep=2000
 
-L=4
+L=8
 
 lr=0.01
 

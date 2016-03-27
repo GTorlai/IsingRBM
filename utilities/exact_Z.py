@@ -86,15 +86,18 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model',default='Ising2d',type=str)
-    parser.add_argument('--L',type=int)
-    parser.add_argument('--T',type=int)
-    parser.add_argument('--hid',type=int)
-    parser.add_argument('--ep',default = 2000     ,type=int)
-    parser.add_argument('--bS',default = 50       ,type=int)
-    parser.add_argument('--lr',default = 0.01     ,type=float)
-    parser.add_argument('--CD',default = 20       ,type=int)
-    parser.add_argument('--L2',default = 0.0      ,type=float)
+    parser.add_argument('--model',help='Name of the model',default='Ising2d')
+    parser.add_argument('--L', help='Linear size of the model',type=int)
+    parser.add_argument('--D', help='Model dimension', default=2,type=int)
+    parser.add_argument('--T', help='Temperature Index', type=int)
+    parser.add_argument('--hid',help='Number of hidden units', type=int)
+    parser.add_argument('--ep', help='Epochs', default = 2000,type=int)
+    parser.add_argument('--bs', help='Batch Size', default = 50 ,type=int)
+    parser.add_argument('--lr', help='Learning Rate', default = 0.01,type=float)
+    parser.add_argument('--CD', help='Contrastive Divergence', default = 20,type=int)
+    parser.add_argument('--L2', help='Regularization', default = 0.0 ,type=float)
+    parser.add_argument('--l', help='Binning Level', type=str)
+    parser.add_argument('--targ', help='Data',  type=str)
  
     args = parser.parse_args()
     

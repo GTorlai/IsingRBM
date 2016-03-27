@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Number of Hidden Units
-nH=2
+nH=4
 
 #Batch Size
 bS=50

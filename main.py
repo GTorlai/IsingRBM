@@ -1,6 +1,7 @@
 import Restricted_Boltzmann_Machine as RBM
 import utilities.network as NET
 import utilities.dataset as DAT
+import utilities.statistics as STAT
 import ising_measurements
 import rbm_measurements
 import argparse
@@ -16,19 +17,18 @@ def main():
     
     parser = argparse.ArgumentParser()
     parser.add_argument('command',type=str)
-    parser.add_argument('--model',default='Ising2d',type=str)
-    parser.add_argument('--L',type=int)
-    parser.add_argument('--T',type=int)
-    parser.add_argument('--hid',type=int)
-    parser.add_argument('--ep',default = 2000     ,type=int)
-    parser.add_argument('--bs',default = 50       ,type=int)
-    parser.add_argument('--lr',default = 0.01     ,type=float)
-    parser.add_argument('--CD',default = 20       ,type=int)
-    parser.add_argument('--L2',default = 0.0      ,type=float)
-    parser.add_argument('--l' ,default = 'visible',type=str)
-    parser.add_argument('--sw',default = 100      ,type=int)
-    parser.add_argument('--k' ,default = 1000     ,type=int)
-
+    parser.add_argument('--model',help='Name of the model',default='Ising2d')
+    parser.add_argument('--L', help='Linear size of the model',type=int)
+    parser.add_argument('--D', help='Model dimension', default=2,type=int)
+    parser.add_argument('--T', help='Temperature Index', type=int)
+    parser.add_argument('--hid',help='Number of hidden units', type=int)
+    parser.add_argument('--ep', help='Epochs', default = 2000,type=int)
+    parser.add_argument('--bs', help='Batch Size', default = 50 ,type=int)
+    parser.add_argument('--lr', help='Learning Rate', default = 0.01,type=float)
+    parser.add_argument('--CD', help='Contrastive Divergence', default = 20,type=int)
+    parser.add_argument('--L2', help='Regularization', default = 0.0 ,type=float)
+    parser.add_argument('--l' , help='Layer sampling', default = 'visible',type=str)
+    parser.add_argument('--targ', help='Stat target')
     args = parser.parse_args()
 
     X = T.matrix()
@@ -84,7 +84,8 @@ def main():
         inputFile = open(inputName,'r')        
         outputFile = open(outputName,'w')
         samples = loadtxt(inputFile)
- 
+        
+        outputFile.write('#  E  E2  M  M2\n')
         for k in range(len(samples)):
             ising.get_energy(samples[k])
             ising.get_magnetization(samples[k])
@@ -113,6 +114,25 @@ def main():
             rbm.get_energy(samples_V[k],samples_H[k])
             rbm.get_magnetization(samples_V[k],samples_H[k])
             rbm.record(outputFile)
+
+    elif args.command == 'statistics':
+
+        inputName  = STAT.build_inputName(Network,args.targ)
+        outputName =STAT.build_outputName(Network)
+        
+        inputFile  = open(inputName, 'r')
+        outputFile = open(outputName,'w')
+       
+        if (args.T == 0) :
+            STAT.write_header(outputFile)
+
+        temperature = STAT.load_temperature(args.T)
+        
+        [obs,data] = STAT.load_data(inputFile)
+
+        [avg,err]  = STAT.observables(obs,data,n_v,temperature)
+        
+        STAT.write_output(outputFile,avg,err)
 
 #    elif args.command == 'classify':
 #
