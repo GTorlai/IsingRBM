@@ -158,12 +158,13 @@ class Z(object):
 
         for i in range(self.M):
             
+            print ('Step: %d\n' % i)
             self.BaseRate_sampler()
             #self.w.append(self.sweep())
             meas = self.sweep() 
             #self.w.append(meas)
             measure = m.log(self.Z_BR*meas)
-            outputFile.write('%.5f\n', % measure)
+            outputFile.write('%.5f\n' % measure)
 
         #r = np.mean(self.w)
         
@@ -191,8 +192,8 @@ if __name__ == "__main__":
     parser.add_argument('--L2', help='Regularization', default = 0.0 ,type=float)
     parser.add_argument('--l', help='Binning Level', type=str)
     parser.add_argument('--targ', help='Data',  type=str)
-    parser.add_argument('--beta', help='Beta parameter', default = 1000     ,type=float)
-    parser.add_argument('--runs', help='Number of sweeps', default = 100       ,type=float)
+    parser.add_argument('--beta', help='Beta parameter', default = 1000 ,type=int)
+    parser.add_argument('--runs', help='Number of sweeps', default = 100 ,type=int)
 
     args = parser.parse_args()
     
@@ -202,7 +203,7 @@ if __name__ == "__main__":
                   args.model,
                   args.hid,
                   args.ep,
-                  args.bS,
+                  args.bs,
                   args.CD,
                   args.lr,
                   args.L2,

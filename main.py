@@ -67,8 +67,6 @@ def main():
                 
         Network.load(Trained_Network)
 
-        NET.print_network(Network.infos)
- 
         rbm = RBM.RBM(X,Network)
         
         rbm.sample(args.l)
@@ -116,6 +114,8 @@ def main():
             rbm.record(outputFile)
 
     elif args.command == 'statistics':
+    
+        print ('Analyzing temperature %d\n' % args.T)
 
         inputName  = STAT.build_inputName(Network,args.targ)
         outputName =STAT.build_outputName(Network)
@@ -129,10 +129,10 @@ def main():
         temperature = STAT.load_temperature(args.T)
         
         [obs,data] = STAT.load_data(inputFile)
-
+        
         [avg,err]  = STAT.observables(obs,data,n_v,temperature)
         
-        STAT.write_output(outputFile,avg,err)
+        STAT.write_output(outputFile,avg,err,temperature)
 
 #    elif args.command == 'classify':
 #

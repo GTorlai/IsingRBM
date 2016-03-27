@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Number of Hidden Units
-nH=2
+nH=4
 
 #Temperature Index
 t=0
@@ -34,7 +34,8 @@ cd ../utilities/
 
 for i in {1..21}
 do
-    python ais.py --L $((L)) --T $((t)) --K $((K)) --M $((M)) --CD $((CD)) --hid $((nH)) --bS $((bS)) --ep $((ep)) --lr ${lr} --L2 ${L2}
+    sqsub -q NAP_8998 --mpp=2g -r 1d -o output$((nH)).log mpirun --mca mpi_warn_on_fork 0 python ais.py --L $((L)) --T $((t)) --beta $((K)) --runs $((M)) --CD $((CD)) --hid $((nH)) --bS $((bS)) --ep $((ep)) --lr ${lr} --L2 ${L2} 
+    #python ais.py --L $((L)) --T $((t)) --K $((K)) --M $((M)) --CD $((CD)) --hid $((nH)) --bS $((bS)) --ep $((ep)) --lr ${lr} --L2 ${L2}
     t=$((t+1))
 done
 

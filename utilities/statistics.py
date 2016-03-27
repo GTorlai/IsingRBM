@@ -17,7 +17,6 @@ def load_data(dataFile):
     header = dataFile.readline().lstrip('#').split()
     # Data
     data = np.loadtxt(dataFile)
-
     return [header,data]
 
 #-------------------------------------------------
@@ -35,7 +34,7 @@ def get_average(data):
         for j in range(n_obs):
             avg[j] += data[i,j]
     
-    avg /= n_meas
+    avg /= 1.0*n_meas
     return avg
 
 #-------------------------------------------------
@@ -47,7 +46,7 @@ def binning_error(data):
     B = data[:]     # copy the dataset
 
     # Determine  number of binning levels
-    min_bin =500    # minimum bin size
+    min_bin = 50    # minimum bin size
     if B.shape[0]<min_bin: Nl = 1 
     else:                  Nl = int(m.floor(m.log(B.shape[0]/min_bin,2))+1)
     
@@ -89,7 +88,7 @@ def observables(obs,data,N,T):
 
     avg = get_average(data)
     Bin = binning_error(data)
-    
+
     err = np.zeros(avg.shape)
     o   = {}
 
@@ -100,15 +99,15 @@ def observables(obs,data,N,T):
     average = {}
     errors = {}
 
-    average['E'] = avg[o['E']] / N
-    average['M'] = avg[o['M']] / N
-    average['C'] = (avg[o['E2']]-avg[o['E']]**2) / (N*T**2)
-    average['S'] = (avg[o['M2']]-avg[o['M']]**2) / (N*T)
+    average['E'] = 1.0*avg[o['E']] / N
+    average['M'] = 1.0*avg[o['M']] / N
+    average['C'] = (1.0*avg[o['E2']]-1.0*avg[o['E']]**2) / (N*T**2)
+    average['S'] = (1.0*avg[o['M2']]-1.0*avg[o['M']]**2) / (N*T)
     
-    errors['E'] = significant(err[o['E']] / N)
-    errors['M'] = significant(err[o['E']] / N)
-    errors['C'] = significant(err[o['E2']] / N + 2*err[o['E']] / N)  
-    errors['S'] = significant(err[o['M2']] / N + 2*err[o['M']] / N)
+    errors['E'] = 1.0*err[o['E']] / (1.0*N)
+    errors['M'] = 1.0*err[o['E']] / N 
+    errors['C'] = 1.0*err[o['E2']] / N + 2.0*err[o['E']] / N  
+    errors['S'] = 1.0*err[o['M2']] / N + 2.0*err[o['M']] / N
     
     return [average,errors]
 
@@ -123,8 +122,9 @@ def print_output(avg,err):
 
 #-------------------------------------------------
 
-def write_output(outputFile,avg,err):
+def write_output(outputFile,avg,err,T):
     
+    outputFile.write('%.3f  ' % T)
     outputFile.write('%.5f  ' % avg['E']) 
     outputFile.write('%.5f  ' % avg['M']) 
     outputFile.write('%.5f  ' % avg['C']) 
@@ -146,14 +146,14 @@ def write_output(outputFile,avg,err):
 
 def write_header(outputFile):
     
-    outputFile.write('#      E')
-    outputFile.write('\tM')
-    outputFile.write('\t C')
-    outputFile.write('\t  S')
-    outputFile.write('\t   dE')
-    outputFile.write('\t     dM')
+    outputFile.write('#   T\t      E')
+    outputFile.write('        M')
+    outputFile.write('\tC')
+    outputFile.write('\t S')
+    outputFile.write('\t  dE')
+    outputFile.write('\t    dM')
     outputFile.write('        dC')
-    outputFile.write('\t dS\n')
+    outputFile.write('\tdS\n')
 
 #-------------------------------------------------
 
@@ -243,6 +243,6 @@ if __name__ == "__main__":
     
     [avg,err] = observables(obs,data,n_v,T)
      
-    write_output(outputFile,avg,err)    
+    write_output(outputFile,avg,err,T)    
 
 

@@ -27,18 +27,18 @@ mkdir compression
 
 for i in {1..10}
 do
-    mv RBM_CD$((CD))_hid$((nH))_bS$((bS))_ep$((ep))_lr0.01_L0.0_Ising2d_L$((L))_T0$((t))_Ising_measures.txt compression/
+    mv RBM_CD$((CD))_hid$((nH))_bS$((bS))_ep$((ep))_lr0.01_L0.0_Ising2d_L$((L))_T0$((t))_logZ.txt compression/
     t=$((t+1))
 done
 for i in {1..11}
 do
-    mv RBM_CD$((CD))_hid$((nH))_bS$((bS))_ep$((ep))_lr0.01_L0.0_Ising2d_L$((L))_T$((t))_Ising_measures.txt compression/
+    mv RBM_CD$((CD))_hid$((nH))_bS$((bS))_ep$((ep))_lr0.01_L0.0_Ising2d_L$((L))_T$((t))_logZ.txt compression/
     t=$((t+1))
 done
 
 cd compression/
 
-tar -czvf RBM_CD$((CD))_hid$((nH))_bS$((bS))_ep$((ep))_lr0.01_L0.0_Ising2d_L$((L))_Ising_measures.tar.gz *.txt
+tar -czvf RBM_CD$((CD))_hid$((nH))_bS$((bS))_ep$((ep))_lr0.01_L0.0_Ising2d_L$((L))_logZ.tar.gz *.txt
 
 mv *.gz ../
 cd ../

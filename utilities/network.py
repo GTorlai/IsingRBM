@@ -217,7 +217,7 @@ def Format(pathToOldNet,T):
     f = open(pathToOldNet)
     old_dictionary = cPickle.load(f)
     
-    network = Network(100,'Ising2d') 
+    network = Network(36,'Ising2d') 
     
     network.infos['Hidden Units'] = old_dictionary['Informations']['Hidden Units'] 
     network.infos['Learning Rate'] = old_dictionary['Informations']['Learning Rate']
@@ -225,7 +225,7 @@ def Format(pathToOldNet,T):
     network.infos['Epochs'] = old_dictionary['Informations']['Epochs']
     network.infos['CD'] = old_dictionary['Informations']['CD_order']
     network.infos['L2'] = old_dictionary['Informations']['L2']
-    network.infos['Visible Units'] = 100
+    network.infos['Visible Units'] = 36
     network.infos['logZ'] = None
     network.infos['d_logZ']   = None
     network.infos['AIS beta'] = None
@@ -237,7 +237,7 @@ def Format(pathToOldNet,T):
     network.infos['H Bias'] = old_dictionary['Parameters'][2]
 
     name = build_fileName(network,'model')
-    path_out = '../data/networks/L10/'
+    path_out = '../data/networks/L6/'
     path_out += name
 
     f_out = open(path_out,'wb')
@@ -257,7 +257,6 @@ if __name__ == "__main__":
 
     if (args.command == 'print'):
         net= cPickle.load(open(args.net))
-        print type(net)
         print_network(net)
     
     if (args.command == 'add'):
@@ -268,7 +267,7 @@ if __name__ == "__main__":
             add_fields(fileName)
      
     if (args.command == 'format'):
-        path = '../data/networks/Old/L10/*.pkl'
+        path = '../data/networks/old/*.pkl'
         files = glob.glob(path)
         counter = 0
         for fileName in files:
