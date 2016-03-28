@@ -125,7 +125,7 @@ class ClassRBM(object):
         
         average_accuracy /= (n_machines - 1)
 
-        print ('\n\nAverage accuracy: %.1f%%' % 100*average_accuracy)
+        print ('\n\nAverage accuracy: %.1f%%' % (100*average_accuracy))
 
 #-------------------------------------------------
         

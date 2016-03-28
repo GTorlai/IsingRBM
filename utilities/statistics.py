@@ -123,8 +123,11 @@ def observables(data,obs,N,T):
     
     errors['E'] = 1.0*err[o['E']] / (1.0*N)
     errors['M'] = 1.0*err[o['E']] / N 
-    errors['C'] = 1.0*err[o['E2']] / N + 2.0*err[o['E']] / N  
-    errors['S'] = 1.0*err[o['M2']] / N + 2.0*err[o['M']] / N
+    errors['C'] = m.sqrt((err[o['E2']] / N)**2 + (err[o['E']] / N)**2)  
+    errors['S'] = m.sqrt((err[o['M2']] / N)**2 + (err[o['M']] / N)**2)  
+ 
+    #errors['C'] = err[o['E2']] / N + 2.0*err[o['E']] / N  
+    #errors['S'] = 1.0*err[o['M2']] / N + 2.0*err[o['M']] / N
     
     return [average,errors]
 
@@ -155,27 +158,20 @@ def print_output(avg,err):
 
 #-------------------------------------------------
 
-def write_output(outputFile,target,avg,err,T):
+def write_output(outputFile,avg,err,T):
    
-    if target == 'Ising_measures':
 
-        outputFile.write('%.3f  ' % T)
-        outputFile.write('%.5f  ' % avg['E']) 
-        outputFile.write('%.5f  ' % avg['M']) 
-        outputFile.write('%.5f  ' % avg['C']) 
-        outputFile.write('%.5f  ' % avg['S']) 
+    outputFile.write('%.3f  ' % T)
+    outputFile.write('%.5f  ' % avg['E']) 
+    outputFile.write('%.5f  ' % avg['M']) 
+    outputFile.write('%.5f  ' % avg['C']) 
+    outputFile.write('%.5f  ' % avg['S']) 
 
-        outputFile.write('%f  ' % err['E']) 
-        outputFile.write('%f  ' % err['M']) 
-        outputFile.write('%f  ' % err['C']) 
-        outputFile.write('%f  ' % err['S']) 
+    outputFile.write('%f  ' % err['E']) 
+    outputFile.write('%f  ' % err['M']) 
+    outputFile.write('%f  ' % err['C']) 
+    outputFile.write('%f  ' % err['S']) 
    
-    if target == 'logZ':
-        
-        outputFile.write('%.3f  ' % T)
-        outputFile.write('%.5f  ' % avg)
-    
-        outputFile.write('%.5f  ' % err)
  
     outputFile.write('\n')
 

@@ -107,7 +107,7 @@ if __name__ == "__main__":
                   args.model,
                   args.hid,
                   args.ep,
-                  args.bS,
+                  args.bs,
                   args.CD,
                   args.lr,
                   args.L2,
@@ -125,8 +125,8 @@ if __name__ == "__main__":
     exact.get_Z()
     logZ = np.log(exact.Z)
     
-    print ('\nLog Partition Function: %f' % logZ) 
+    print ('\nT = %d  LogZ: %f' % (args.T,logZ)) 
     
-    NET.update_logZ(pathToNetwork,Network,logZ,0,0,0)
+    #NET.update_logZ(pathToNetwork,Network,logZ,0,0,0)
 
 #-------------------------------------------------

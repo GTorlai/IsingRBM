@@ -85,6 +85,39 @@ def pickle_datasets():
         output.close()
         Tcounter += 1
 
+#-------------------------------------------------
+
+def dePickle_dataset():
+
+    for k in range(21):
+        
+        path = '../data/datasets/train/L8/Ising2d_L8_spins_T'
+        if (k<10):
+            path += '0'
+        path += str(k)
+        path += '.pkl.gz'
+
+        f = gzip.open(path,'r')
+        data = cPickle.load(f)
+        f.close()
+        
+        outputName = '../data/samples/L8/MC_Ising2d_L8_T'
+        if (k<10):
+            outputName += '0'
+        outputName += str(k)
+        outputName += '.txt'
+
+        outputFile = open(outputName , 'w')
+
+        for i in range(len(data)):
+            for j in range(len(data[0])):
+                
+                outputFile.write('%d ' % data[i,j])
+            
+            outputFile.write('\n')
+
+        outputFile.close()
+
 #------------------------------------------------
 
 def format_dataset_CPP(fileName):
@@ -131,4 +164,6 @@ if __name__ == "__main__":
 
     elif args.command == 'format':
         Format_Dataset_CPP(args.file)
-
+    
+    elif args.command == 'dePickle':
+        dePickle_dataset()

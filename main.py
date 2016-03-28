@@ -2,6 +2,7 @@ import Restricted_Boltzmann_Machine as RBM
 import utilities.network as NET
 import utilities.dataset as DAT
 import utilities.statistics as STAT
+import utilities.plot as plot
 import rbm_classifier 
 import ising_measurements
 import rbm_measurements
@@ -13,8 +14,19 @@ import cPickle
 import numpy as np
 from pylab import loadtxt
 
+#-------------------------------------------------
+
 def main():
     
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+                            """ MAIN EXECUTABLE """
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
     parser = argparse.ArgumentParser()
     parser.add_argument('command',type=str)
     parser.add_argument('--model',help='Name of the model',default='Ising2d')
@@ -28,7 +40,9 @@ def main():
     parser.add_argument('--CD', help='Contrastive Divergence', default = 20,type=int)
     parser.add_argument('--L2', help='Regularization', default = 0.0 ,type=float)
     parser.add_argument('--l' , help='Layer sampling', default = 'visible',type=str)
-    parser.add_argument('--targ', help='Stat target')
+    parser.add_argument('--targ', help='Data Analysis target')
+    parser.add_argument('--e', help='Estimator to plot',type=str) 
+    
     args = parser.parse_args()
 
     X = T.matrix()
@@ -44,6 +58,13 @@ def main():
                          args.lr,
                          args.L2,
                          args.T)
+
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+                           """ TRAIN THE NETWORK """
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  
     if args.command == 'train' :
         
@@ -59,6 +80,13 @@ def main():
         rbm = RBM.RBM(X,Network)
         
         rbm.Train(train_set,X)
+    
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+                           """ SAMPLE FROM NETWORK"""
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     elif args.command == 'sample':
         
@@ -71,7 +99,14 @@ def main():
         rbm = RBM.RBM(X,Network)
         
         rbm.sample(args.l)
+   
     
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+                           """ MEASURE OBS ON RBM """
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
     elif args.command == 'measureRBM':
         
         pathToNetwork = NET.build_networkPath(Network)
@@ -95,6 +130,13 @@ def main():
             rbm.get_energy(samples_V[k],samples_H[k])
             rbm.get_magnetization(samples_V[k],samples_H[k])
             rbm.record(outputFile)
+    
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+                             """ DATA ANALYSIS """
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     elif args.command == 'statistics':
     
@@ -122,6 +164,13 @@ def main():
             pathToNetwork = NET.build_networkPath(Network)
             Trained_Network = cPickle.load(open(pathToNetwork))  
             NET.update_logZ(pathToNetwork,Trained_Network,avg,err,1000,100)
+    
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+                               """ RBM CLASSIFIER"""
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     elif args.command == 'classify':
         
@@ -145,6 +194,15 @@ def main():
         
         
         CRBM.Test(NLP_matrix,outputFile)
+
+
+
+
+
+
+
+
+
 
 
 #    elif args.command == 'measureIsing':
@@ -196,6 +254,45 @@ def main():
 #        ClassRBM.Test(pathToTestSet,temperatureIndex,args.sw)
 #
 #
+#    elif args.command == 'statistics':
+#    
+#        print ('Analyzing temperature %d\n' % args.T)
+#        
+#        inputName = 'data/measurements/L'
+#        inputName += str(args.L)
+#        inputName += '/MC_Ising2d_L'
+#        inputName += str(args.L)
+#        inputName += '_T'
+#        if (args.T<10):
+#            inputName += '0'
+#        inputName += str(args.T)
+#        inputName += '.txt'
+#        
+#        outputName = 'data/observables/temp/MC_Ising2d_L'
+#        outputName += str(args.L)
+#        outputName += '_T'
+#        if (args.T<10):
+#            outputName += '0'
+#        outputName += str(args.T)
+#        outputName += '.txt'
+# 
+#        inputFile  = open(inputName, 'r')
+#        outputFile = open(outputName,'w')
+#       
+#        if (args.T == 0) :
+#            STAT.write_header(outputFile)
+#
+#        temperature = STAT.load_temperature(args.T)
+#        
+#        [obs,data] = STAT.load_data(inputFile)
+#       
+#        [avg,err] = STAT.analyze(args.targ,data,obs,n_v,temperature)
+#        
+#        STAT.write_output(outputFile,avg,err,temperature)
+#
+
+
+
 
 
 if __name__ == "__main__":
