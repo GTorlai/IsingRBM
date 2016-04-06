@@ -4,7 +4,7 @@ import numpy as np
 import theano
 import argparse
 import glob
-
+import matplotlib.pyplot as plt
 #-------------------------------------------------
 
 class Network(object):
@@ -247,19 +247,134 @@ def Format(pathToOldNet,T):
 
 #------------------------------------------------
 
-if __name__ == "__main__":
+def Check_Weights(visible):
     
+    """ Print information of the network """
+    
+    network = '../data/networks/L8/RBM_CD20_hid64_bS50_ep2000_lr0.01_L0.0_Ising2d_L8_T00_model.pkl'
+
+    f = open(network)
+    dictionary = cPickle.load(f)
+    f.close()
+
+    n_v = 64
+    n_h = 128
+    #v = np.ones((n_v))
+    v = np.random.randint(2, size=n_v)
+
+    def free_energy(W,b,c,v_state):
+
+        """ Compute the free energy of the visible state """
+
+        vis = np.dot(v_state,b)
+        hid = np.dot(v_state,W) + c
+        F = - vis - np.sum(np.log(1.0 + np.exp(hid)))
+        
+        return F
+
+    W = dictionary['Weights'].get_value(borrow=True)
+    b = dictionary['V Bias'].get_value(borrow=True)
+    c = dictionary['H Bias'].get_value(borrow=True)
+    logZ = dictionary['logZ']
+
+    F = free_energy(W,b,c,v)
+    #print ('Free energy: %f' % -F)
+    
+
+    p = np.exp(-F-logZ)
+    #W = np.random.uniform(-1.0,1.0,size=(n_h,n_v))
+
+    print p
+    #obs = 0.0;
+
+    #for i in range(n_h):
+    #    
+    #    temp = 0.0
+    #    
+    #    for j in range(n_v):
+
+    #        temp += W[i,j]*v[j]
+    #    
+    #    obs += np.log(1.0+np.exp(c[i] + temp))
+
+    #print obs
+    #
+    #v = np.random.randint(2, size=n_v)
+
+     
+    #network = '../data/networks/L8/RBM_CD20_hid16_bS50_ep2000_lr0.01_L0.0_Ising2d_L8_T00_model.pkl'
+
+    #f = open(network)
+    #dictionary = cPickle.load(f)
+    #f.close()
+
+
+    #W = dictionary['Weights'].get_value(borrow=True)
+    #
+    #c = dictionary['H Bias'].get_value(borrow=True)
+
+    #for i in range(16):
+    #    print('Unit %d, W = %f    c = %f\n' % (i,W[visible][i],c[i]))
+
+
+
+
+#------------------------------------------------
+
+def Parameter_histogram(network,parameter):
+    
+    """ Print information of the network """
+
+    f = open(network)
+    dictionary = cPickle.load(f)
+    f.close()
+
+    print('*****************************')
+    print('           NETWORK')
+    print('\nInfos:')
+    
+
+    if (parameter == 'W'):
+        temp = dictionary['Weights'].get_value(borrow=True)
+        par = []
+        for j in range(16):
+            for i in range(int(dictionary['Hidden Units'])):
+                par.append(temp[j][i])
+
+        par = np.array(par)
+    
+    elif (parameter == 'b'):
+        par = dictionary['V Bias'].get_value(borrow=True)
+    
+    elif (parameter == 'c'):
+        par = dictionary['H Bias'].get_value(borrow=True)
+
+    plt.hist(par, bins=100, normed=False)
+    plt.title("%s Histogram" % parameter)
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.show()
+
+
+#------------------------------------------------
+
+if __name__ == "__main__":
+   
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument('command',type=str)
     parser.add_argument('--net',type=str)
-
+    parser.add_argument('--par',type=str)
+    parser.add_argument('--test',type=str)
+    parser.add_argument('--v',type=int)
     args = parser.parse_args()
 
     if (args.command == 'print'):
         net= cPickle.load(open(args.net))
-        print_network(net)
-    
+        #print_network(net)
+        Parameter_histogram(args.net,args.par)
+
     if (args.command == 'add'):
         path = '../data/networks/L10/*.pkl'
         files = glob.glob(path)
@@ -278,4 +393,6 @@ if __name__ == "__main__":
             
             Format(fileName,counter)
             counter += 1
-            
+   
+    if (args.command == 'test'):
+        Check_Weights(args.v);

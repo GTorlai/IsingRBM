@@ -72,12 +72,12 @@ def pickle_datasets():
                 
             data = np.array(data,dtype='float32')
 
-        outputName = '../data/datasets/train/L12/Ising2d_L12_spins_T'
-        if (Tcounter < 10):
-            outputName += '0'
-            outputName += str(Tcounter)
-        else:
-            outputName += str(Tcounter)
+        outputName = '../data/datasets/train/L8/Ising2d_L8_spins_T_Infinite'
+        #if (Tcounter < 10):
+        #    outputName += '0'
+        #    outputName += str(Tcounter)
+        #else:
+        #    outputName += str(Tcounter)
         outputName += '.pkl.gz'
 
         with gzip.open(outputName,'wb') as output:

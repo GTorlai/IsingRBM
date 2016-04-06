@@ -139,14 +139,15 @@ class Z(object):
         
         """ One AIS sweep"""
 
-        W = 1.0
+        W = 0.0
 
         for k in range(1,self.K+1):
 
             for i in range(10):
                 self.Gibbs_sampler(k-1)
 
-            W *= self.get_prob(k) / self.get_prob(k-1)
+            #W *= self.get_prob(k) / self.get_prob(k-1)
+            W += m.log(self.get_prob(k) / self.get_prob(k-1))
 
         return W
     
@@ -163,7 +164,8 @@ class Z(object):
             #self.w.append(self.sweep())
             meas = self.sweep() 
             #self.w.append(meas)
-            measure = m.log(self.Z_BR*meas)
+            #measure = m.log(self.Z_BR*meas)
+            measure = m.log(self.Z_BR) + meas
             outputFile.write('%.5f\n' % measure)
 
         #r = np.mean(self.w)
@@ -190,7 +192,6 @@ if __name__ == "__main__":
     parser.add_argument('--lr', help='Learning Rate', default = 0.01,type=float)
     parser.add_argument('--CD', help='Contrastive Divergence', default = 20,type=int)
     parser.add_argument('--L2', help='Regularization', default = 0.0 ,type=float)
-    parser.add_argument('--l', help='Binning Level', type=str)
     parser.add_argument('--targ', help='Data',  type=str)
     parser.add_argument('--beta', help='Beta parameter', default = 1000 ,type=int)
     parser.add_argument('--runs', help='Number of sweeps', default = 100 ,type=int)
