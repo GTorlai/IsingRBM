@@ -211,151 +211,44 @@ def print_network(netInfos):
         print ('\t- AIS beta: %d\n' % netInfos['AIS beta'])
         print ('\t- AIS runs: %d\n' % netInfos['AIS runs'])
  
-#------------------------------------------------
-
-def Format(pathToOldNet,T):
-    
-    f = open(pathToOldNet)
-    old_dictionary = cPickle.load(f)
-    
-    network = Network(100,'Ising2d') 
-    
-    network.infos['Hidden Units'] = old_dictionary['Informations']['Hidden Units'] 
-    network.infos['Learning Rate'] = old_dictionary['Informations']['Learning Rate']
-    network.infos['Batch Size'] = old_dictionary['Informations']['Batch Size']
-    network.infos['Epochs'] = old_dictionary['Informations']['Epochs']
-    network.infos['CD'] = old_dictionary['Informations']['CD_order']
-    network.infos['L2'] = old_dictionary['Informations']['L2']
-    network.infos['Visible Units'] = 100
-    network.infos['logZ'] = None
-    network.infos['d_logZ']   = None
-    network.infos['AIS beta'] = None
-    network.infos['AIS runs'] = None
-    network.infos['Model'] = 'Ising2d'
-    network.infos['Temperature'] = T 
-    network.infos['Weights'] = old_dictionary['Parameters'][0]
-    network.infos['V Bias'] = old_dictionary['Parameters'][1]
-    network.infos['H Bias'] = old_dictionary['Parameters'][2]
-
-    name = build_fileName(network,'model')
-    path_out = '../data/networks/L10/'
-    path_out += name
-
-    f_out = open(path_out,'wb')
-    cPickle.dump(network.infos,f_out)
-    f_out.close()
 
 #------------------------------------------------
 
-def Check_Weights(visible):
-    
-    """ Print information of the network """
-    
-    network = '../data/networks/L8/RBM_CD20_hid64_bS50_ep2000_lr0.01_L0.0_Ising2d_L8_T00_model.pkl'
-
-    f = open(network)
-    dictionary = cPickle.load(f)
-    f.close()
-
-    n_v = 64
-    n_h = 128
-    #v = np.ones((n_v))
-    v = np.random.randint(2, size=n_v)
-
-    def free_energy(W,b,c,v_state):
-
-        """ Compute the free energy of the visible state """
-
-        vis = np.dot(v_state,b)
-        hid = np.dot(v_state,W) + c
-        F = - vis - np.sum(np.log(1.0 + np.exp(hid)))
-        
-        return F
-
-    W = dictionary['Weights'].get_value(borrow=True)
-    b = dictionary['V Bias'].get_value(borrow=True)
-    c = dictionary['H Bias'].get_value(borrow=True)
-    logZ = dictionary['logZ']
-
-    F = free_energy(W,b,c,v)
-    #print ('Free energy: %f' % -F)
-    
-
-    p = np.exp(-F-logZ)
-    #W = np.random.uniform(-1.0,1.0,size=(n_h,n_v))
-
-    print p
-    #obs = 0.0;
-
-    #for i in range(n_h):
-    #    
-    #    temp = 0.0
-    #    
-    #    for j in range(n_v):
-
-    #        temp += W[i,j]*v[j]
-    #    
-    #    obs += np.log(1.0+np.exp(c[i] + temp))
-
-    #print obs
-    #
-    #v = np.random.randint(2, size=n_v)
-
-     
-    #network = '../data/networks/L8/RBM_CD20_hid16_bS50_ep2000_lr0.01_L0.0_Ising2d_L8_T00_model.pkl'
-
-    #f = open(network)
-    #dictionary = cPickle.load(f)
-    #f.close()
-
-
-    #W = dictionary['Weights'].get_value(borrow=True)
-    #
-    #c = dictionary['H Bias'].get_value(borrow=True)
-
-    #for i in range(16):
-    #    print('Unit %d, W = %f    c = %f\n' % (i,W[visible][i],c[i]))
-
-
-
-
-#------------------------------------------------
-
-def Parameter_histogram(network,parameter):
+def export_parameters(T,par):
     
     """ Print information of the network """
 
-    f = open(network)
-    dictionary = cPickle.load(f)
-    f.close()
-
-    print('*****************************')
-    print('           NETWORK')
-    print('\nInfos:')
+    n_v = 64 
+    n_h = 64
     
-
-    if (parameter == 'W'):
-        temp = dictionary['Weights'].get_value(borrow=True)
-        par = []
-        for j in range(16):
-            for i in range(int(dictionary['Hidden Units'])):
-                par.append(temp[j][i])
-
-        par = np.array(par)
+    networkName = '../data/networks/L8/RBM_CD20_hid64_bS50_ep2000_lr0.01_L0.0_Ising2d_L8_T'
+    if (T<10):
+        networkName += '0'
+    networkName += str(T)
+    networkName += '_model.pkl'
     
-    elif (parameter == 'b'):
-        par = dictionary['V Bias'].get_value(borrow=True)
+    net = cPickle.load(open(networkName))
+
+    W = net['Weights'].get_value(borrow=True)
+    b = net['V Bias'].get_value(borrow=True)
+    c = net['H Bias'].get_value(borrow=True)
+
+    outputName = '../data/networks/L8/parameters_txt/RBM_CD20_hid64_bS50_ep2000_lr0.01_L0.0_Ising2d_L8_T'
+    if (T<10):
+        outputName += '0'
+    outputName += str(T)
+    outputName += '_par_'
+    outputName += par
+    outputName += '_.txt'
+    output = open(outputName,'w')
     
-    elif (parameter == 'c'):
-        par = dictionary['H Bias'].get_value(borrow=True)
-
-    plt.hist(par, bins=100, normed=False)
-    plt.title("%s Histogram" % parameter)
-    plt.xlabel("Value")
-    plt.ylabel("Frequency")
-    plt.show()
-
-
+    if (par is 'W'):
+        np.savetxt(output,W,fmt='%8f')
+    if (par is 'b'):
+        np.savetxt(output,b,fmt='%8f')
+    if (par is 'c'):
+        np.savetxt(output,c,fmt='%8f')
+    
 #------------------------------------------------
 
 if __name__ == "__main__":
@@ -367,13 +260,12 @@ if __name__ == "__main__":
     parser.add_argument('--net',type=str)
     parser.add_argument('--par',type=str)
     parser.add_argument('--test',type=str)
-    parser.add_argument('--v',type=int)
+    parser.add_argument('--T',type=int)
     args = parser.parse_args()
 
     if (args.command == 'print'):
         net= cPickle.load(open(args.net))
         #print_network(net)
-        Parameter_histogram(args.net,args.par)
 
     if (args.command == 'add'):
         path = '../data/networks/L10/*.pkl'
@@ -382,17 +274,6 @@ if __name__ == "__main__":
         for fileName in files:
             add_fields(fileName)
      
-    if (args.command == 'format'):
-        path = '../data/networks/old/*.pkl'
-        files = glob.glob(path)
-        counter = 0
-        for fileName in files:
-            
-            if (counter == 21):
-                counter = 0
-            
-            Format(fileName,counter)
-            counter += 1
-   
-    if (args.command == 'test'):
-        Check_Weights(args.v);
+    if (args.command == 'export_par'):
+
+        export_parameters(args.T,args.par)
